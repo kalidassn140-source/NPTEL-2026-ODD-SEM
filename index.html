@@ -409,7 +409,7 @@ function renderTabs(){
 }
 function go(k){
   cur=k;
-  if(k==='overall'){const p=pool(k);if(!Object.keys(p.ta).length&&!p.sub){p.order=shuf(base(k).map(q=>q.id));p.perm={};p.idx=0}}
+  if(k==='overall'){const p=pool(k);if(!Object.keys(p.ta).length&&!p.sub){p.order=shuf(base(k).map(q=>q.id));p.perm={};p.idx=0;p.sv=null}}
   renderTabs();renderContent();window.scrollTo({top:0});
 }
 function step(d){const i=TABS.findIndex(t=>t.k===cur)+d;if(i>=0&&i<TABS.length)go(TABS[i].k)}
@@ -452,7 +452,8 @@ function renderPractice(k,p){
   h+=`</div><div class="nav2"><button class="btn" data-act="prev" ${p.idx===0?'disabled':''}>← Previous</button><select data-sel="goto">${list.map((_,i)=>`<option value="${i}" ${i===p.idx?'selected':''}>${i+1}/${N}</option>`).join('')}</select><button class="btn pri" data-act="next" ${p.idx===N-1?'disabled':''}>Next →</button></div>`;
   return h;
 }
-function diagram(q){return q.id==='w1q11'?`<div class="diag" style="background:#fff;padding:6px"><img src="images/week1-q11.jpg" alt="Week 1 Q11 figure from the PDF" style="max-width:100%;height:auto;display:block;margin:auto"></div>`:''}
+const DIAG1=`<svg viewBox="0 0 700 195" style="width:100%;max-width:640px;height:auto;display:block;margin:0 auto" role="img" aria-label="Figure: Input Signal to Sensor, a blank block marked ?, and Actuator, to Output Signal. A dashed Transducer box (input side) encloses the Sensor and the blank block; a second dashed blue Transducer box (output side) encloses the blank block and the Actuator."><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker></defs><g font-family="system-ui,sans-serif" font-size="13" fill="var(--ink)"><rect x="100" y="50" width="300" height="100" fill="none" stroke="var(--ink)" stroke-dasharray="4 3"/><rect x="255" y="35" width="305" height="130" fill="none" stroke="#2563eb" stroke-dasharray="4 3"/><text x="100" y="44">Transducer</text><text x="560" y="28" text-anchor="end" fill="#2563eb">Transducer</text><text x="100" y="168">Transducer's input</text><text x="560" y="183" text-anchor="end" fill="#2563eb">Transducer's output</text><g fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"><rect x="110" y="70" width="120" height="60" rx="10"/><rect x="270" y="70" width="120" height="60" rx="10"/><rect x="430" y="70" width="120" height="60" rx="10"/></g><text x="170" y="104" text-anchor="middle">Sensor</text><text x="330" y="106" text-anchor="middle" font-size="18" font-weight="700">?</text><text x="490" y="104" text-anchor="middle">Actuator</text><g stroke="var(--ink)" stroke-width="1.5" marker-end="url(#ah)"><line x1="4" y1="100" x2="108" y2="100"/><line x1="230" y1="100" x2="268" y2="100"/><line x1="390" y1="100" x2="428" y2="100"/><line x1="550" y1="100" x2="694" y2="100"/></g><text x="4" y="90">Input Signal</text><text x="580" y="90">Output Signal</text></g></svg>`;
+function diagram(q){return q.id==='w1q11'?`<div class="diag">${DIAG1}</div>`:''}
 function justBox(q,pm){
   let h=`<div class="box"><p><b>Correct answer:</b> ${L[pm.indexOf(q.a)]}. ${esc(q.o[q.a])}</p><p><b>Justification (from PDF):</b> ${esc(q.j)}</p>`;
   h+=`<p><b>Concept explanation:</b> ${esc(q.e)} <span class="tag">AI-added, please verify</span></p>`;
@@ -539,7 +540,11 @@ document.addEventListener('click',e=>{
   const cur_q=()=>BY[p.order[p.idx]];
   switch(a){
     case 'tab':go(b.dataset.k);return;
-    case 'mode':p.mode=b.dataset.m;renderContent();return;
+    case 'mode':{const nm=b.dataset.m;
+      if(p.mode!==nm){p.sv=p.sv||{};p.sv[p.mode]={order:p.order,so:p.so,perm:p.perm,idx:p.idx};
+        const n=p.sv[nm]||{order:k==='overall'?shuf(base(k).map(q=>q.id)):base(k).map(q=>q.id),so:false,perm:{},idx:0};
+        p.order=n.order;p.so=n.so;p.perm=n.perm;p.idx=n.idx;p.mode=nm}
+      renderContent();return}
     case 'shuffle':p.order=shuf(p.order);p.perm={};p.idx=0;renderContent();return;
     case 'orig':p.order=base(k).map(q=>q.id);p.so=false;p.perm={};p.idx=0;renderContent();return;
     case 'so':p.so=!p.so;p.perm={};renderContent();return;
