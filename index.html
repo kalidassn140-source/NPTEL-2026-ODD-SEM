@@ -10,8 +10,12 @@
 <style>
 :root{--bg:#f3f5fa;--card:#fff;--ink:#1b2430;--mut:#5b6676;--pri:#2563eb;--priL:#dbe7ff;--ok:#16a34a;--okL:#dcfce7;--bad:#dc2626;--badL:#fee2e2;--line:#dde3ee;--warn:#b45309}
 @media(prefers-color-scheme:dark){:root{--bg:#0f141c;--card:#18202c;--ink:#e8edf5;--mut:#9aa6b8;--pri:#6c9bff;--priL:#1f2f52;--ok:#4ade80;--okL:#12331f;--bad:#f87171;--badL:#3b1717;--line:#2a3547;--warn:#fbbf24}}
+
+
+:root[data-theme="light"]{--bg:#f3f5fa;--card:#fff;--ink:#1b2430;--mut:#5b6676;--pri:#2563eb;--priL:#dbe7ff;--ok:#16a34a;--okL:#dcfce7;--bad:#dc2626;--badL:#fee2e2;--line:#dde3ee;--warn:#b45309}
+:root[data-theme="dark"]{--bg:#0f141c;--card:#18202c;--ink:#e8edf5;--mut:#9aa6b8;--pri:#6c9bff;--priL:#1f2f52;--ok:#4ade80;--okL:#12331f;--bad:#f87171;--badL:#3b1717;--line:#2a3547;--warn:#fbbf24}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 header{text-align:center;padding:18px 14px 8px;position:relative}
 h1{font-size:clamp(1.3rem,4.5vw,2.2rem);margin:0 0 12px;line-height:1.2}
 .prof{display:flex;align-items:center;justify-content:center;gap:12px;flex-direction:column}
@@ -26,7 +30,7 @@ nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid
 #tabs button{flex:none;scroll-snap-align:center;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:99px;cursor:pointer;font-size:.9rem;white-space:nowrap}
 #tabs button.act{background:var(--pri);color:#fff;border-color:var(--pri);font-weight:600}
 #tabs button.sp{margin-left:10px}
-main{max-width:860px;margin:0 auto;padding:12px 12px 60px}
+main{max-width:var(--maxw,860px);margin:0 auto;padding:12px 12px 60px}
 button{font:inherit}
 .btn{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:.88rem}
 .btn:hover:not(:disabled){border-color:var(--pri)}
@@ -37,7 +41,7 @@ button{font:inherit}
 .seg{display:inline-flex;border:1px solid var(--pri);border-radius:9px;overflow:hidden}
 .seg button{border:0;background:var(--card);color:var(--pri);padding:8px 16px;cursor:pointer;font-weight:600}
 .seg button.on{background:var(--pri);color:#fff}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:var(--cpad,14px);margin:10px 0}
 .prog{height:8px;background:var(--line);border-radius:9px;overflow:hidden;margin:8px 0}
 .prog div{height:100%;background:var(--pri);transition:width .25s}
 .meta{display:flex;gap:10px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
@@ -45,7 +49,7 @@ button{font:inherit}
 .tag{background:#fef3c7;color:var(--warn);padding:1px 8px;border-radius:99px;font-size:.72rem}
 .qt{font-weight:600;margin:6px 0 10px;white-space:pre-line}
 .opts{display:grid;gap:8px}
-.opt{display:flex;gap:10px;text-align:left;align-items:flex-start;width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);cursor:pointer}
+.opt{display:flex;gap:10px;text-align:left;align-items:flex-start;width:100%;padding:var(--opad,10px 12px);border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);cursor:pointer}
 .opt b{flex:none;width:24px;height:24px;border-radius:50%;background:var(--priL);color:var(--pri);display:flex;align-items:center;justify-content:center;font-size:.8rem}
 .opt:hover:not(.lock){border-color:var(--pri)}
 .opt.sel{border-color:var(--pri);background:var(--priL)}
@@ -77,7 +81,17 @@ th:first-child,td:first-child{text-align:left}
 .mut{color:var(--mut);font-size:.85rem}
 #modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:20;padding:12px}
 #modal.show{display:flex}
-#modal .card{width:100%;max-width:400px;margin:0}
+#modal .card{width:100%;max-width:560px;max-height:92vh;overflow:auto;margin:0}
+#modal h4{margin:16px 0 4px;border-bottom:1px solid var(--line);padding-bottom:3px}
+#modal select{width:100%}
+#modal input[type=color]{width:100%;height:34px;padding:0;border:1px solid var(--line);border-radius:6px;background:none;cursor:pointer}
+#modal input[type=range]{width:100%}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.cg label{margin:0!important;font-weight:500!important;font-size:.8rem!important}
+.kl{font-size:.85rem;margin:0;padding-left:18px}
+.card.kb{outline:3px solid var(--pri);outline-offset:2px}
+#slist .card{scroll-margin-top:70px}
+.leg{font-size:.82rem;margin:2px 0 6px}
 #modal label{display:block;margin:10px 0 3px;font-weight:600;font-size:.9rem}
 #modal input[type=text]{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
 input[type=number]{width:70px;padding:5px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
@@ -94,15 +108,49 @@ select{padding:6px;border-radius:8px;border:1px solid var(--line);background:var
 <nav><div id="tabs" role="tablist"></div></nav>
 <main id="content"></main>
 
-<div id="modal"><div class="card">
+<div id="modal"><div class="card" id="adm">
   <h3 style="margin:0 0 6px">Admin panel</h3>
+  <h4>Profile</h4>
   <label for="inName">Your name</label><input type="text" id="inName">
   <label for="inPhoto">Profile photo (from this device)</label><input type="file" id="inPhoto" accept="image/*">
   <div class="bar"><button class="btn" data-act="rmphoto">Remove saved photo</button></div>
+  <h4>Appearance</h4>
+  <label for="setTheme">Theme</label>
+  <select id="setTheme" data-set="theme"><option value="auto">Automatic (follow device)</option><option value="light">Light</option><option value="dark">Dark</option></select>
+  <label>Colours</label>
+  <div class="cg">
+    <label>Accent<input type="color" id="col-pri" data-set="c.pri"></label>
+    <label>Correct<input type="color" id="col-ok" data-set="c.ok"></label>
+    <label>Wrong<input type="color" id="col-bad" data-set="c.bad"></label>
+    <label>Page background<input type="color" id="col-bg" data-set="c.bg"></label>
+    <label>Card background<input type="color" id="col-card" data-set="c.card"></label>
+    <label>Text<input type="color" id="col-ink" data-set="c.ink"></label>
+  </div>
+  <div class="bar"><button class="btn" data-act="resetcolors">Reset colours</button></div>
+  <label>Font size: <b id="v-font"></b></label><input type="range" min="12" max="28" step="1" id="setFont" data-set="font">
+  <label>Card width: <b id="v-w"></b></label><input type="range" min="600" max="1400" step="20" id="setW" data-set="w">
+  <label>Card padding: <b id="v-pad"></b></label><input type="range" min="8" max="40" step="1" id="setPad" data-set="pad">
+  <h4>Timers (minutes, 0 = no limit)</h4>
+  <div class="cg">
+    <label>Weekly tests<input type="number" min="0" max="300" id="tm-week" data-set="t.week"></label>
+    <label>Overall test<input type="number" min="0" max="300" id="tm-overall" data-set="t.overall"></label>
+    <label>Numerical test<input type="number" min="0" max="300" id="tm-numeric" data-set="t.numeric"></label>
+  </div>
+  <div class="mut">The timer starts at your first answer in a test and submits automatically when time is up. You can still change it on the test page.</div>
+  <h4>Reports</h4>
+  <div class="bar"><select id="repWeek" style="width:auto"></select><button class="btn" data-act="repweek">Week report</button><button class="btn" data-act="repall">All weeks report</button><button class="btn" data-act="repoverall">Overall report</button></div>
+  <div class="mut">Opens a printable report in a new tab (use Print / Save as PDF there). It uses your latest saved test attempts.</div>
+  <h4>Keyboard shortcuts</h4>
+  <ul class="kl">
+    <li><b>Practice:</b> ↑ ↓ choose option · Enter select (or next question once answered) · 1-4 / A-D pick option · ← → previous / next question · H hint · S show answer · J justification · R reset · M switch to Test</li>
+    <li><b>Test:</b> ↑ ↓ move through options · Enter / Space select · 1-4 / A-D pick option and jump to next question · ← → previous / next question · Shift+Enter Save Answers · M switch to Practice</li>
+    <li><b>Study:</b> ↓ → next question · ↑ ← previous question · Home / End first / last · / focus search</li>
+    <li><b>Any tab:</b> Ctrl+← → or [ ] change tab</li>
+  </ul>
   <div class="bar" style="justify-content:flex-end;margin-top:14px">
     <button class="btn" data-act="resetall" style="color:var(--bad)">Reset all data</button>
-    <button class="btn" data-act="closeadmin">Cancel</button>
-    <button class="btn pri" data-act="saveadmin">Save</button>
+    <button class="btn" data-act="closeadmin">Close</button>
+    <button class="btn pri" data-act="saveadmin">Save name</button>
   </div>
 </div></div>
 
@@ -371,8 +419,45 @@ const L='ABCDEF';
 const BY={};ALL.forEach(q=>BY[q.id]=q);
 const TABS=[...Array(13).keys()].map(w=>({k:'w'+w,t:'Week '+w})).concat([{k:'overall',t:'Overall Questions'},{k:'numeric',t:'Numerical Questions'},{k:'marks',t:'Mark Sheet'},{k:'study',t:'Study (Answer Key)'}]);
 const LS='i40prep_v1';
-let S={name:'Your Name',photo:'',marks:{}};
+const DEFS=()=>({name:'Your Name',photo:'',marks:{},set:{theme:'auto',c:{},font:16,w:860,pad:14,t:{week:0,overall:0,numeric:0}}});
+let S=DEFS();
 try{Object.assign(S,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
+function normSet(){const d=DEFS().set;S.set=Object.assign(d,S.set||{});S.set.c=S.set.c||{};S.set.t=Object.assign({week:0,overall:0,numeric:0},S.set.t||{})}
+normSet();
+const CMAP={pri:'--pri',ok:'--ok',bad:'--bad',bg:'--bg',card:'--card',ink:'--ink'};
+function applySettings(){
+  const r=document.documentElement,st=S.set;
+  if(st.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',st.theme);
+  r.style.fontSize=st.font+'px';
+  r.style.setProperty('--maxw',st.w+'px');r.style.setProperty('--cpad',st.pad+'px');
+  r.style.setProperty('--opad',Math.round(st.pad*.75)+'px '+Math.round(st.pad*.9)+'px');
+  Object.values(CMAP).concat(['--priL','--okL','--badL']).forEach(v=>r.style.removeProperty(v));
+  for(const k in CMAP)if(st.c[k])r.style.setProperty(CMAP[k],st.c[k]);
+  if(st.c.pri)r.style.setProperty('--priL','color-mix(in srgb,'+st.c.pri+' 16%,var(--card))');
+  if(st.c.ok)r.style.setProperty('--okL','color-mix(in srgb,'+st.c.ok+' 16%,var(--card))');
+  if(st.c.bad)r.style.setProperty('--badL','color-mix(in srgb,'+st.c.bad+' 16%,var(--card))');
+}
+function hex6(v){v=(v||'').trim();if(/^#[0-9a-f]{3}$/i.test(v))v='#'+v[1]+v[1]+v[2]+v[2]+v[3]+v[3];return /^#[0-9a-f]{6}$/i.test(v)?v:'#000000'}
+function populateAdmin(){
+  const st=S.set,cs=getComputedStyle(document.documentElement);
+  $('#inName').value=S.name;$('#inPhoto').value='';
+  $('#setTheme').value=st.theme;
+  for(const k in CMAP)$('#col-'+k).value=hex6(st.c[k]||cs.getPropertyValue(CMAP[k]));
+  $('#setFont').value=st.font;$('#setW').value=st.w;$('#setPad').value=st.pad;
+  $('#v-font').textContent=st.font+' px';$('#v-w').textContent=st.w+' px';$('#v-pad').textContent=st.pad+' px';
+  ['week','overall','numeric'].forEach(k=>$('#tm-'+k).value=st.t[k]);
+  $('#repWeek').innerHTML=[...Array(13).keys()].map(w=>`<option value="${w}">Week ${w}</option>`).join('');
+}
+document.getElementById('modal').addEventListener('input',e=>{
+  const t=e.target,k=t.dataset&&t.dataset.set;if(!k)return;
+  const st=S.set;
+  if(k.startsWith('c.'))st.c[k.slice(2)]=t.value;
+  else if(k.startsWith('t.'))st.t[k.slice(2)]=Math.max(0,Math.min(300,+t.value||0));
+  else st[k]=t.type==='range'?+t.value:t.value;
+  applySettings();save();
+  $('#v-font').textContent=st.font+' px';$('#v-w').textContent=st.w+' px';$('#v-pad').textContent=st.pad+' px';
+  if(k==='theme'){for(const c in CMAP){if(!st.c[c])$('#col-'+c).value=hex6(getComputedStyle(document.documentElement).getPropertyValue(CMAP[c]))}}
+});
 function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){alert('Could not save to browser storage (it may be full).')}}
 let cur='w0';
 const P={};
@@ -427,9 +512,6 @@ function renderPool(k){
   if(k==='numeric')h+=`<div class="mut">Questions whose answer is a number, rate, range, count or formula-based value, collected from all weeks. Worked step-by-step solutions are AI-added where a calculation is possible.</div>`;
   h+=`<div class="bar"><div class="seg"><button class="${p.mode==='practice'?'on':''}" data-act="mode" data-m="practice">Practice</button><button class="${p.mode==='test'?'on':''}" data-act="mode" data-m="test">Test</button></div></div>`;
   h+=`<div class="bar"><button class="btn" data-act="shuffle">🔀 Shuffle Questions</button><button class="btn" data-act="shuffle">↻ Reshuffle</button><button class="btn ${p.so?'on':''}" data-act="so">Shuffle Options: ${p.so?'ON':'OFF'}</button><button class="btn" data-act="orig">Original Order</button></div>`;
-  h+=p.mode==='practice'
-    ?`<div class="kbd">⌨ <b>↑ ↓</b> choose option · <b>Enter</b> select (or next question once answered) · <b>1-4</b> / <b>A-D</b> pick option · <b>← →</b> previous / next question · <b>H</b> hint · <b>S</b> show answer · <b>J</b> justification · <b>R</b> reset · <b>M</b> switch mode · <b>Ctrl+← →</b> or <b>[ ]</b> change tab</div>`
-    :`<div class="kbd">⌨ <b>↑ ↓</b> move through options · <b>Enter</b>/<b>Space</b> select · <b>1-4</b> / <b>A-D</b> pick option and jump to next question · <b>← →</b> previous / next question · <b>Shift+Enter</b> Save Answers · <b>M</b> switch mode · <b>Ctrl+← →</b> or <b>[ ]</b> change tab</div>`;
   h+=p.mode==='practice'?renderPractice(k,p):renderTest(k,p);
   $('#content').innerHTML=h;
 }
@@ -461,9 +543,10 @@ function justBox(q,pm){
   else if(q.num)h+=`<p class="mut">No calculation is involved: this is a numeric specification to remember.</p>`;
   return h+'</div>';
 }
+function limitFor(k){return /^w\d+$/.test(k)?S.set.t.week:(S.set.t[k]||0)}
 function timerUI(k,p){
-  if(k==='w0'||/^w\d+$/.test(k))return '';
-  return `<div class="bar"><label>⏱ Timer (min): <input type="number" id="tmin" min="0" max="300" value="${p.tmin}"></label><button class="btn" data-act="tstart">Start timer</button><b id="tspan"></b></div>`;
+  const lim=limitFor(k),v=p.tmin||lim;
+  return `<div class="bar"><label>⏱ Timer (min): <input type="number" id="tmin" min="0" max="300" value="${v}"></label><button class="btn" data-act="tstart">Start timer</button><b id="tspan"></b><span class="mut">${lim?`Default ${lim} min (set in Admin panel); starts at your first answer.`:'No default limit (set one in the Admin panel).'}</span></div>`;
 }
 function renderTest(k,p){
   const list=p.order.map(id=>BY[id]),N=list.length;
@@ -496,33 +579,86 @@ function submit(k,auto){
   let c=0,u=0;list.forEach(q=>{const s=p.ta[q.id];if(s===undefined)u++;else if(s===q.a)c++});
   if(!auto&&u>0&&!confirm(`${u} question(s) are unanswered. Submit anyway?`))return;
   const w=N-c-u,pct=Math.round(c/N*1000)/10;
+  const secs=p.t0?Math.round((Date.now()-p.t0)/1000):0,lim=p.tlim||0;
   p.sub={c,w,u,N,pct};p.tEnd=0;
   const m=S.marks[k]||(S.marks[k]={attempts:0,best:null,latest:null});
-  m.attempts++;m.latest={c,w,u,N,pct,date:Date.now()};
+  m.attempts++;m.latest={c,w,u,N,pct,date:Date.now(),secs,lim,ans:Object.assign({},p.ta)};
   if(!m.best||pct>m.best.pct)m.best={c,N,pct,date:Date.now()};
   save();if(cur===k){renderContent();window.scrollTo({top:0})}
 }
+function fmtT(sec){if(!sec)return '–';return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0')}
+const tname=k=>TABS.find(t=>t.k===k).t;
+function chartSVG(c,keys){
+  const n=keys.length,W=720,H=270,L=34,B=30,T=14,pw=(W-L-10)/n;
+  let g='';
+  [0,25,50,75,100].forEach(v=>{const y=T+(H-T-B)*(1-v/100);g+=`<line x1="${L}" x2="${W-6}" y1="${y}" y2="${y}" style="stroke:${c.grid}"/><text x="${L-5}" y="${y+4}" text-anchor="end" font-size="10" style="fill:${c.ink}">${v}</text>`});
+  keys.forEach((k,i)=>{const m=S.marks[k],x=L+i*pw,lab=/^w\d+$/.test(k)?'W'+k.slice(1):k==='overall'?'All':'Num';
+    g+=`<text x="${x+pw/2}" y="${H-12}" text-anchor="middle" font-size="10" style="fill:${c.ink}">${lab}</text>`;
+    if(m&&m.latest)[[m.best.pct,c.best,0,'best'],[m.latest.pct,c.latest,1,'latest']].forEach(([v,col,j,nm])=>{
+      const h=(H-T-B)*v/100,bw=Math.min(pw*.34,40),bx=x+pw/2-bw-1+j*(bw+2);
+      g+=`<rect x="${bx}" y="${H-B-h}" width="${bw}" height="${h}" rx="2" style="fill:${col}"><title>${tname(k)}: ${nm} ${v}%</title></rect>`})});
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Bar chart of best and latest percentage for each test">${g}</svg>`;
+}
 function renderMarks(){
-  const rows=TABS.filter(t=>t.k!=='marks'&&t.k!=='study');
-  let tot=0,best=0,n=0;
-  rows.forEach(t=>{const m=S.marks[t.k];if(/^w\d+$/.test(t.k)){tot+=15;if(m&&m.best){best+=m.best.c;n++}}});
+  const keys=TABS.filter(t=>t.k!=='marks'&&t.k!=='study').map(t=>t.k);
+  let tot=0,best=0,n=0,C=0,Wr=0,U=0;
+  keys.forEach(k=>{const m=S.marks[k];if(/^w\d+$/.test(k)){tot+=15;if(m&&m.best){best+=m.best.c;n++}if(m&&m.latest){C+=m.latest.c;Wr+=m.latest.w;U+=m.latest.u}}});
+  const T3=C+Wr+U,t=S.set.t;
   let h=`<h2 style="margin:6px 0">Mark Sheet</h2><div class="card"><div class="sum"><div><b>${best}/${tot}</b>Best, 13 weekly tests</div><div><b>${tot?Math.round(best/tot*1000)/10:0}%</b>Weekly average (best)</div><div><b>${n}/13</b>Weeks attempted</div></div></div>`;
-  h+=`<div class="card" style="overflow-x:auto"><table><tr><th>Test</th><th>Latest</th><th>%</th><th>Best</th><th>Tries</th><th style="min-width:80px"></th><th>Last attempt</th></tr>`;
-  h+=rows.map(t=>{const m=S.marks[t.k];
-    if(!m||!m.latest)return `<tr><td>${t.t}</td><td colspan="6" class="mut">Not attempted</td></tr>`;
-    return `<tr><td>${t.t}</td><td>${m.latest.c}/${m.latest.N}</td><td>${m.latest.pct}%</td><td>${m.best.c}/${m.best.N} (${m.best.pct}%)</td><td>${m.attempts}</td><td><div class="pb"><i style="width:${m.best.pct}%"></i></div></td><td class="mut">${new Date(m.latest.date).toLocaleDateString()}</td></tr>`}).join('');
+  h+=`<div class="card"><b>Score graph</b><div class="leg"><span style="color:var(--pri)">■</span> Best % &nbsp; <span style="color:var(--ok)">■</span> Latest %</div>${chartSVG({ink:'var(--ink)',grid:'var(--line)',best:'var(--pri)',latest:'var(--ok)'},keys)}`;
+  if(T3>0)h+=`<div class="leg" style="margin-top:10px"><b>Latest weekly attempts combined</b></div><div style="display:flex;height:16px;border-radius:8px;overflow:hidden;background:var(--line)"><i style="width:${C/T3*100}%;background:var(--ok)"></i><i style="width:${Wr/T3*100}%;background:var(--bad)"></i></div><div class="leg"><span style="color:var(--ok)">■</span> ${C} correct &nbsp; <span style="color:var(--bad)">■</span> ${Wr} wrong &nbsp; <span style="color:var(--mut)">■</span> ${U} unanswered</div>`;
+  h+=`</div>`;
+  h+=`<div class="card mut">⏱ Timer limits (change in Admin panel): weekly tests ${t.week?t.week+' min':'none'} · Overall ${t.overall?t.overall+' min':'none'} · Numerical ${t.numeric?t.numeric+' min':'none'}</div>`;
+  h+=`<div class="card" style="overflow-x:auto"><table><tr><th>Test</th><th>Latest</th><th>%</th><th>Best</th><th>Tries</th><th style="min-width:80px"></th><th>Timer</th><th>Time taken</th><th>Last attempt</th></tr>`;
+  h+=keys.map(k=>{const m=S.marks[k];
+    if(!m||!m.latest)return `<tr><td>${tname(k)}</td><td colspan="8" class="mut">Not attempted</td></tr>`;
+    const l=m.latest;
+    return `<tr><td>${tname(k)}</td><td>${l.c}/${l.N}</td><td>${l.pct}%</td><td>${m.best.c}/${m.best.N} (${m.best.pct}%)</td><td>${m.attempts}</td><td><div class="pb"><i style="width:${m.best.pct}%"></i></div></td><td>${l.lim?l.lim+' min':'–'}</td><td>${fmtT(l.secs)}</td><td class="mut">${new Date(l.date).toLocaleDateString()}</td></tr>`}).join('');
   h+=`</table></div><div class="bar"><button class="btn" data-act="clearmarks" style="color:var(--bad)">Clear Mark Sheet</button></div>`;
   $('#content').innerHTML=h;
 }
-
+/* ---------- reports ---------- */
+function summaryRows(keys){return keys.map(k=>{const m=S.marks[k];
+  if(!m||!m.latest)return `<tr><td>${tname(k)}</td><td colspan="7" style="color:#6b7280">Not attempted</td></tr>`;
+  const l=m.latest;
+  return `<tr><td>${tname(k)}</td><td>${l.c}/${l.N}</td><td>${l.pct}%</td><td>${l.w}</td><td>${l.u}</td><td>${m.best.c}/${m.best.N} (${m.best.pct}%)</td><td>${m.attempts}</td><td>${l.secs?fmtT(l.secs):'–'}${l.lim?' / '+l.lim+' min limit':''}</td></tr>`}).join('')}
+function detailHTML(k){
+  const m=S.marks[k];
+  if(!m||!m.latest)return `<h3>${tname(k)}</h3><p>Not attempted yet.</p>`;
+  const l=m.latest;
+  let h=`<h3>${tname(k)}: ${l.c}/${l.N} (${l.pct}%)</h3><p>Correct ${l.c} · Wrong ${l.w} · Unanswered ${l.u} · Attempts ${m.attempts} · Best ${m.best.pct}% · Time ${l.secs?fmtT(l.secs):'–'}${l.lim?' (limit '+l.lim+' min)':''} · ${new Date(l.date).toLocaleString()}</p>`;
+  if(!l.ans)return h+'<p>Question-level detail was not stored for this attempt. Retake the test to include it.</p>';
+  h+='<table><tr><th>#</th><th>Question</th><th>Your answer</th><th>Correct answer</th><th>Result</th><th>Justification</th></tr>';
+  base(k).forEach((q,i)=>{const a=l.ans[q.id],r=a===undefined?'Unanswered':a===q.a?'Correct':'Wrong',col=r==='Correct'?'#15803d':r==='Wrong'?'#b91c1c':'#6b7280';
+    h+=`<tr><td>${i+1}</td><td>${esc(q.q)} <small>(${src(q)})</small></td><td>${a===undefined?'—':L[a]+'. '+esc(q.o[a])}</td><td>${L[q.a]}. ${esc(q.o[q.a])}</td><td style="color:${col};font-weight:700">${r}</td><td>${esc(q.j)}</td></tr>`});
+  return h+'</table>';
+}
+function buildReport(kind,wk){
+  const weeks=[...Array(13).keys()].map(w=>'w'+w),all=weeks.concat(['overall','numeric']);
+  let keys,det,title;
+  if(kind==='week'){keys=['w'+wk];det=keys;title='Week '+wk+' report'}
+  else if(kind==='weeks'){keys=weeks;det=weeks;title='All weeks report'}
+  else{keys=all;det=['overall','numeric'];title='Overall report'}
+  const c={ink:'#1b2430',grid:'#d1d5db',best:'#2563eb',latest:'#16a34a'};
+  const att=keys.filter(k=>S.marks[k]&&S.marks[k].latest);
+  const avg=att.length?Math.round(att.reduce((a,k)=>a+S.marks[k].latest.pct,0)/att.length*10)/10:0;
+  const weak=keys.filter(k=>{const m=S.marks[k];return !m||!m.latest||m.best.pct<60}).map(tname);
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title><style>body{font:14px/1.5 system-ui,sans-serif;margin:24px auto;padding:0 14px;color:#1b2430;max-width:1000px}h1{margin:0;font-size:22px}table{border-collapse:collapse;width:100%;margin:8px 0}th,td{border:1px solid #d1d5db;padding:5px 7px;text-align:left;vertical-align:top}th{background:#f3f4f6}button{padding:6px 12px;margin-right:8px}@media print{.np{display:none}}</style></head><body><div class="np"><button onclick="window.print()">Print / Save as PDF</button><button onclick="const a=document.createElement('a');a.href=location.href;a.download='report.html';a.click()">Download</button></div><h1>${esc(COURSE)}</h1><h2>${title}</h2><p><b>${esc(S.name)}</b> · Generated ${new Date().toLocaleString()}</p><p>Tests attempted: <b>${att.length}/${keys.length}</b> · Average of latest scores: <b>${avg}%</b></p>${chartSVG(c,keys)}<p style="font-size:12px"><span style="color:${c.best}">■</span> Best % &nbsp; <span style="color:${c.latest}">■</span> Latest %</p><h3>Summary</h3><table><tr><th>Test</th><th>Latest</th><th>%</th><th>Wrong</th><th>Unanswered</th><th>Best</th><th>Attempts</th><th>Time</th></tr>${summaryRows(keys)}</table>${kind!=='week'?`<h3>Needs revision (best below 60% or not attempted)</h3><p>${weak.length?weak.map(esc).join(', '):'None, great work!'}</p>`:''}${det.map(detailHTML).join('')}</body></html>`;
+}
+function openReport(kind,wk){
+  const url=URL.createObjectURL(new Blob([buildReport(kind,wk)],{type:'text/html'}));
+  const w=window.open(url,'_blank');
+  if(!w){const a=document.createElement('a');a.href=url;a.download='report-'+kind+(wk!==undefined?wk:'')+'.html';a.click()}
+}
 /* ---------- study / answer key ---------- */
-const ST={w:'all',s:''};
+const ST={w:'all',s:'',i:-1};
 function renderStudy(){
   let h=`<h2 style="margin:6px 0">Study: Answer Key &amp; Justifications</h2><div class="mut">Read each question with its correct answer, the justification printed in the PDF, and a plain-language explanation of what it means. Nothing here affects your scores.</div>`;
   h+=`<div class="bar"><select id="stw"><option value="all">All weeks</option>${[...Array(13).keys()].map(w=>`<option value="${w}" ${String(w)===ST.w?'selected':''}>Week ${w}</option>`).join('')}</select><input type="text" id="stq" placeholder="Search questions or answers…" value="${esc(ST.s)}" style="flex:1;min-width:160px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit"></div><div id="slist"></div>`;
   $('#content').innerHTML=h;studyList();
 }
 function studyList(){
+  ST.i=-1;
   const t=ST.s.trim().toLowerCase();
   const list=ALL.filter(q=>(ST.w==='all'||q.w===+ST.w)&&(!t||(q.q+' '+q.o.join(' ')+' '+q.e+' '+q.j).toLowerCase().includes(t)));
   const pm=[0,1,2,3];
@@ -558,19 +694,25 @@ document.addEventListener('click',e=>{
     case 'prev':p.idx--;renderContent();window.scrollTo({top:0});return;
     case 'next':p.idx++;renderContent();window.scrollTo({top:0});return;
     case 'tpick':{const id=b.dataset.id,o=+b.dataset.o;
+      if(!p.t0)p.t0=Date.now();
+      {const lim=p.tmin||limitFor(k);if(!p.tEnd&&lim>0){p.tEnd=Date.now()+lim*60000;p.tlim=lim;tick()}}
       p.kq=Math.max(0,p.order.indexOf(id));p.kd=Math.max(0,perm(p,BY[id]).indexOf(o));
       if(p.ta[id]===o)delete p.ta[id];else p.ta[id]=o;
       const card=b.closest('.q');card.querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',+x.dataset.o===p.ta[id]));
       const c=$('#cnt');if(c)c.textContent=Object.keys(p.ta).length;showCursor(false);return}
     case 'submit':submit(k);return;
-    case 'retake':p.ta={};p.sub=null;p.tEnd=0;renderContent();window.scrollTo({top:0});return;
-    case 'tstart':{const v=+($('#tmin')||{}).value||0;p.tmin=v;p.tEnd=v>0?Date.now()+v*60000:0;tick();return}
+    case 'retake':p.ta={};p.sub=null;p.tEnd=0;p.t0=0;p.tlim=0;renderContent();window.scrollTo({top:0});return;
+    case 'tstart':{const v=+($('#tmin')||{}).value||0;p.tmin=v;p.tEnd=v>0?Date.now()+v*60000:0;p.tlim=v;if(!p.t0)p.t0=Date.now();tick();return}
     case 'clearmarks':if(confirm('Clear all saved scores?')){S.marks={};save();renderMarks()}return;
-    case 'admin':$('#inName').value=S.name;$('#inPhoto').value='';$('#modal').classList.add('show');return;
+    case 'admin':populateAdmin();$('#modal').classList.add('show');return;
     case 'closeadmin':$('#modal').classList.remove('show');return;
     case 'saveadmin':S.name=$('#inName').value.trim()||'Your Name';save();renderHeader();$('#modal').classList.remove('show');return;
     case 'rmphoto':S.photo='';save();renderHeader();return;
-    case 'resetall':if(confirm('Erase name, photo and all scores?')){S={name:'Your Name',photo:'',marks:{}};save();renderHeader();$('#modal').classList.remove('show');renderContent()}return;
+    case 'resetall':if(confirm('Erase name, photo, settings and all scores?')){S=DEFS();save();applySettings();renderHeader();$('#modal').classList.remove('show');renderContent()}return;
+    case 'resetcolors':S.set.c={};save();applySettings();populateAdmin();return;
+    case 'repweek':openReport('week',+$('#repWeek').value);return;
+    case 'repall':openReport('weeks');return;
+    case 'repoverall':openReport('overall');return;
   }
 });
 document.addEventListener('input',e=>{if(e.target.id==='stq'){ST.s=e.target.value;studyList()}});
@@ -605,7 +747,17 @@ document.addEventListener('keydown',e=>{
   if(e.ctrlKey||e.metaKey||e.altKey)return;
   if(key==='['||key===']'){step(key===']'?1:-1);e.preventDefault();return}
   if(t.closest&&t.closest('#tabs,#adminBtn')&&(key==='Enter'||key===' '))return;
-  if(cur==='marks'||cur==='study')return;
+  if(cur==='study'){
+    const cs=[...document.querySelectorAll('#slist .card')];
+    if(key==='/'){const q=$('#stq');if(q){q.focus();e.preventDefault()}return}
+    if(!cs.length)return;
+    let i=ST.i;
+    if(key==='ArrowDown'||key==='ArrowRight')i=i<0?0:Math.min(cs.length-1,i+1);
+    else if(key==='ArrowUp'||key==='ArrowLeft')i=i<0?0:Math.max(0,i-1);
+    else if(key==='Home')i=0;else if(key==='End')i=cs.length-1;else return;
+    ST.i=i;cs.forEach(c=>c.classList.remove('kb'));cs[i].classList.add('kb');
+    cs[i].scrollIntoView({block:'start',behavior:'smooth'});e.preventDefault();return}
+  if(cur==='marks')return;
   const p=pool(cur),k=key.toLowerCase();
   const done=()=>{e.preventDefault();if(t&&t.blur&&t.closest&&t.closest('#content'))t.blur()};
   if(k==='m'){const o=p.mode==='practice'?'test':'practice';if(clickAct(`[data-act="mode"][data-m="${o}"]`))done();return}
@@ -645,7 +797,7 @@ function tick(){
 }
 setInterval(tick,1000);
 window.addEventListener('load',mathify);
-renderHeader();selfCheck();renderTabs();renderContent();
+applySettings();renderHeader();selfCheck();renderTabs();renderContent();
 </script>
 </body>
 </html>
