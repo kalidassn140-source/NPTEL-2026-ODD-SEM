@@ -53,6 +53,8 @@ button{font:inherit}
 .opt.bad{border-color:var(--bad);background:var(--badL)}
 .opt.rev{border-color:var(--ok);border-style:dashed;background:var(--okL)}
 .opt.lock{cursor:default}
+.opt.kb{outline:3px solid var(--pri);outline-offset:1px}
+.kbd{font-size:.78rem;color:var(--mut);background:var(--card);border:1px dashed var(--line);border-radius:8px;padding:6px 10px;margin:6px 0}
 .fb{margin:10px 0 2px;padding:8px 12px;border-radius:9px;font-weight:600}
 .fb.ok{background:var(--okL);color:var(--ok)}
 .fb.bad{background:var(--badL);color:var(--bad)}
@@ -140,7 +142,7 @@ const RAW=[
 ["Which organization has developed the ISA 100.11a standard?","Instrument Society of America|International Society of Automation|International Studies Association|International Solar Alliance","B","8,3","ISA100.11a is a wireless industrial automation standard from the International Society of Automation (ISA).","ISA in industrial context = automation society."],
 ["Which of the following is/are the drawbacks of proprietary non-IP-based solutions?","Limited flexibility to end users|Interoperability|Limited last-mile connectivity|All of these","D","6,4","Proprietary non-IP solutions lock users in, hinder interoperability and restrict last-mile connectivity, so all listed are drawbacks.","Check whether each option is a drawback."],
 ["Which MQTT QoS Level is also known as “at most once” delivery?","QoS 0|QoS 1|QoS 2|None of these","A","7,5","QoS 0 is fire-and-forget (at most once), QoS 1 is at least once, QoS 2 is exactly once.","The lowest level number, no acknowledgement."],
-["Fill in the blank space designated by the question mark.\n(Figure: Input Signal → Sensor → [ ? ] → Actuator → Output Signal; transducer boxes mark input and output sides.)","Snubber|Repeater|Processor|Amplifier","C","2,1","In a sensing-and-actuation chain, the sensor output is processed (decision/control logic) before driving the actuator, so the block is a processor.","What sits between sensing and actuating to decide?"],
+["Fill in the blank space designated by the question mark.","Snubber|Repeater|Processor|Amplifier","C","2,1","In a sensing-and-actuation chain, the sensor output is processed (decision/control logic) before driving the actuator, so the block is a processor.","What sits between sensing and actuating to decide?"],
 ["Which of the following best describes a vector sensor?","Its response depends only on the temperature.|Its response depends only on the magnitude of the input.|Its response depends on the magnitude, direction, and orientation of the input parameter.|Its response is independent of the input parameter.","C","20,1","A vector sensor responds to both size and direction/orientation of the quantity (e.g. accelerometer, magnetometer), unlike a scalar sensor.","Vectors have magnitude AND direction."],
 ["Which of the following frequency ranges is used by 6LoWPAN worldwide?","902–929 MHz|2400–2483.5 MHz|1800–1900 MHz|5.8 GHz","B","17,2","6LoWPAN over IEEE 802.15.4 uses the globally available 2.4 GHz ISM band, 2400–2483.5 MHz.","The worldwide ISM band."],
 ["In DDS RTPS, data is referred to as:","Packets|Frames|Messages|Topics","D","22,5","DDS is data-centric publish/subscribe: data is organized and addressed by named Topics.","DDS is data-centric: data is organized by a named ..."],
@@ -375,7 +377,7 @@ function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){alert('C
 let cur='w0';
 const P={};
 function base(k){if(k==='overall')return ALL;if(k==='numeric')return ALL.filter(q=>q.num);return ALL.filter(q=>q.w===+k.slice(1))}
-function pool(k){if(!P[k])P[k]={mode:'practice',order:base(k).map(q=>q.id),so:false,perm:{},idx:0,ps:{},ta:{},sub:null,tmin:0,tEnd:0};return P[k]}
+function pool(k){if(!P[k])P[k]={mode:'practice',order:base(k).map(q=>q.id),so:false,perm:{},idx:0,ps:{},ta:{},sub:null,tmin:0,tEnd:0,kd:0,kq:0,_li:-1};return P[k]}
 function shuf(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
 function fixed(q){return q.o.length<4||/all of|none of|both|above/i.test(q.o.join('|'))}
 function perm(p,q){if(!p.so||fixed(q))return q.o.map((_,i)=>i);return p.perm[q.id]||(p.perm[q.id]=shuf(q.o.map((_,i)=>i)))}
@@ -415,7 +417,7 @@ function step(d){const i=TABS.findIndex(t=>t.k===cur)+d;if(i>=0&&i<TABS.length)g
 /* ---------- content ---------- */
 function mathify(){if(window.renderMathInElement)try{renderMathInElement($('#content'),{delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false})}catch(e){}}
 function renderContent(){
-  if(cur==='marks')renderMarks();else if(cur==='study')renderStudy();else renderPool(cur);
+  if(cur==='marks')renderMarks();else if(cur==='study')renderStudy();else{renderPool(cur);showCursor(false)}
   mathify();
 }
 function titleFor(k){return k==='overall'?'Overall Questions (all weeks)':k==='numeric'?'Numerical Questions':'Week '+k.slice(1)}
@@ -425,12 +427,16 @@ function renderPool(k){
   if(k==='numeric')h+=`<div class="mut">Questions whose answer is a number, rate, range, count or formula-based value, collected from all weeks. Worked step-by-step solutions are AI-added where a calculation is possible.</div>`;
   h+=`<div class="bar"><div class="seg"><button class="${p.mode==='practice'?'on':''}" data-act="mode" data-m="practice">Practice</button><button class="${p.mode==='test'?'on':''}" data-act="mode" data-m="test">Test</button></div></div>`;
   h+=`<div class="bar"><button class="btn" data-act="shuffle">🔀 Shuffle Questions</button><button class="btn" data-act="shuffle">↻ Reshuffle</button><button class="btn ${p.so?'on':''}" data-act="so">Shuffle Options: ${p.so?'ON':'OFF'}</button><button class="btn" data-act="orig">Original Order</button></div>`;
+  h+=p.mode==='practice'
+    ?`<div class="kbd">⌨ <b>↑ ↓</b> choose option · <b>Enter</b> select (or next question once answered) · <b>1-4</b> / <b>A-D</b> pick option · <b>← →</b> previous / next question · <b>H</b> hint · <b>S</b> show answer · <b>J</b> justification · <b>R</b> reset · <b>M</b> switch mode · <b>Ctrl+← →</b> or <b>[ ]</b> change tab</div>`
+    :`<div class="kbd">⌨ <b>↑ ↓</b> move through options · <b>Enter</b>/<b>Space</b> select · <b>1-4</b> / <b>A-D</b> pick option and jump to next question · <b>← →</b> previous / next question · <b>Shift+Enter</b> Save Answers · <b>M</b> switch mode · <b>Ctrl+← →</b> or <b>[ ]</b> change tab</div>`;
   h+=p.mode==='practice'?renderPractice(k,p):renderTest(k,p);
   $('#content').innerHTML=h;
 }
 function renderPractice(k,p){
   const list=p.order.map(id=>BY[id]),N=list.length;
   p.idx=Math.max(0,Math.min(p.idx,N-1));
+  if(p._li!==p.idx){p.kd=0;p._li=p.idx}
   const q=list[p.idx],st=p.ps[q.id]||(p.ps[q.id]={wrong:[],ok:false,last:null,hint:false,show:false,just:false});
   const pm=perm(p,q);
   let h=`<div class="prog"><div style="width:${(p.idx+1)/N*100}%"></div></div><div class="card">`;
@@ -446,7 +452,7 @@ function renderPractice(k,p){
   h+=`</div><div class="nav2"><button class="btn" data-act="prev" ${p.idx===0?'disabled':''}>← Previous</button><select data-sel="goto">${list.map((_,i)=>`<option value="${i}" ${i===p.idx?'selected':''}>${i+1}/${N}</option>`).join('')}</select><button class="btn pri" data-act="next" ${p.idx===N-1?'disabled':''}>Next →</button></div>`;
   return h;
 }
-function diagram(q){return q.id==='w1q11'?`<div class="diag">Figure (redrawn from the PDF):<br><b>Input Signal → [ Sensor ] → [ ? ] → [ Actuator ] → Output Signal</b></div>`:''}
+function diagram(q){return q.id==='w1q11'?`<div class="diag" style="background:#fff;padding:6px"><img src="images/week1-q11.jpg" alt="Week 1 Q11 figure from the PDF" style="max-width:100%;height:auto;display:block;margin:auto"></div>`:''}
 function justBox(q,pm){
   let h=`<div class="box"><p><b>Correct answer:</b> ${L[pm.indexOf(q.a)]}. ${esc(q.o[q.a])}</p><p><b>Justification (from PDF):</b> ${esc(q.j)}</p>`;
   h+=`<p><b>Concept explanation:</b> ${esc(q.e)} <span class="tag">AI-added, please verify</span></p>`;
@@ -537,7 +543,7 @@ document.addEventListener('click',e=>{
     case 'shuffle':p.order=shuf(p.order);p.perm={};p.idx=0;renderContent();return;
     case 'orig':p.order=base(k).map(q=>q.id);p.so=false;p.perm={};p.idx=0;renderContent();return;
     case 'so':p.so=!p.so;p.perm={};renderContent();return;
-    case 'pick':{const q=BY[b.dataset.id],o=+b.dataset.o,st=p.ps[q.id];
+    case 'pick':{const q=BY[b.dataset.id],o=+b.dataset.o,st=p.ps[q.id];p.kd=Math.max(0,perm(p,q).indexOf(o));
       if(o===q.a){st.ok=true;st.last='ok'}else{if(!st.wrong.includes(o))st.wrong.push(o);st.last='bad'}
       renderContent();return}
     case 'hint':{const st=p.ps[cur_q().id];st.hint=!st.hint;renderContent();return}
@@ -547,9 +553,10 @@ document.addEventListener('click',e=>{
     case 'prev':p.idx--;renderContent();window.scrollTo({top:0});return;
     case 'next':p.idx++;renderContent();window.scrollTo({top:0});return;
     case 'tpick':{const id=b.dataset.id,o=+b.dataset.o;
+      p.kq=Math.max(0,p.order.indexOf(id));p.kd=Math.max(0,perm(p,BY[id]).indexOf(o));
       if(p.ta[id]===o)delete p.ta[id];else p.ta[id]=o;
       const card=b.closest('.q');card.querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',+x.dataset.o===p.ta[id]));
-      const c=$('#cnt');if(c)c.textContent=Object.keys(p.ta).length;return}
+      const c=$('#cnt');if(c)c.textContent=Object.keys(p.ta).length;showCursor(false);return}
     case 'submit':submit(k);return;
     case 'retake':p.ta={};p.sub=null;p.tEnd=0;renderContent();window.scrollTo({top:0});return;
     case 'tstart':{const v=+($('#tmin')||{}).value||0;p.tmin=v;p.tEnd=v>0?Date.now()+v*60000:0;tick();return}
@@ -573,9 +580,55 @@ document.addEventListener('change',e=>{
     fr.readAsDataURL(e.target.files[0]);
   }
 });
+function showCursor(scroll){
+  document.querySelectorAll('#content .opt.kb').forEach(x=>x.classList.remove('kb'));
+  if(cur==='marks'||cur==='study')return;
+  const p=pool(cur);if(p.mode==='test'&&p.sub)return;
+  const card=p.mode==='practice'?document.querySelector('#content .card'):document.querySelectorAll('#content .q')[p.kq];
+  if(!card)return;
+  const el=card.querySelectorAll('.opts .opt')[p.kd];
+  if(el){el.classList.add('kb');if(scroll&&el.scrollIntoView)el.scrollIntoView({block:'center',behavior:'smooth'})}
+}
+function clickAct(sel){const b=document.querySelector('#content '+sel);if(b&&!b.disabled){b.click();return true}return false}
+function clickOpt(card,d){const el=card&&card.querySelectorAll('.opts .opt')[d];if(el&&el.dataset.o!==undefined){el.click();return true}return false}
 document.addEventListener('keydown',e=>{
-  if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)||$('#modal').classList.contains('show'))return;
-  if(e.key==='ArrowRight')step(1);else if(e.key==='ArrowLeft')step(-1);
+  const t=e.target;
+  if(/INPUT|TEXTAREA|SELECT/.test(t.tagName)||$('#modal').classList.contains('show'))return;
+  const key=e.key;
+  /* tab switching: Ctrl+Left/Right or [ and ] */
+  if((e.ctrlKey||e.metaKey)&&(key==='ArrowRight'||key==='ArrowLeft')){step(key==='ArrowRight'?1:-1);e.preventDefault();return}
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(key==='['||key===']'){step(key===']'?1:-1);e.preventDefault();return}
+  if(t.closest&&t.closest('#tabs,#adminBtn')&&(key==='Enter'||key===' '))return;
+  if(cur==='marks'||cur==='study')return;
+  const p=pool(cur),k=key.toLowerCase();
+  const done=()=>{e.preventDefault();if(t&&t.blur&&t.closest&&t.closest('#content'))t.blur()};
+  if(k==='m'){const o=p.mode==='practice'?'test':'practice';if(clickAct(`[data-act="mode"][data-m="${o}"]`))done();return}
+  const letter='abcd'.indexOf(k),num=/^[1-9]$/.test(key)?+key-1:-1,pick=num>=0?num:letter;
+  if(p.mode==='practice'){
+    const q=BY[p.order[p.idx]],st=p.ps[q.id],n=q.o.length,card=document.querySelector('#content .card');
+    if(key==='ArrowDown'||key==='ArrowUp'){p.kd=(p.kd+(key==='ArrowDown'?1:n-1))%n;showCursor(true);done();return}
+    if(key==='ArrowRight'){if(clickAct('[data-act="next"]'))done();return}
+    if(key==='ArrowLeft'){if(clickAct('[data-act="prev"]'))done();return}
+    if(pick>=0&&pick<n){if(clickOpt(card,pick))done();return}
+    if(key==='Enter'||key===' '){
+      if(st&&(st.ok||st.show)){clickAct('[data-act="next"]')}else clickOpt(card,p.kd);
+      done();return}
+    const m={h:'hint',s:'show',j:'just',r:'reset'}[k];
+    if(m&&clickAct(`[data-act="${m}"]`)){done()}
+    return;
+  }
+  /* test mode */
+  if(p.sub)return;
+  const N=p.order.length,cards=()=>document.querySelectorAll('#content .q');
+  const nOpts=i=>BY[p.order[i]].o.length;
+  if(key==='ArrowDown'){if(p.kd<nOpts(p.kq)-1)p.kd++;else if(p.kq<N-1){p.kq++;p.kd=0}showCursor(true);done();return}
+  if(key==='ArrowUp'){if(p.kd>0)p.kd--;else if(p.kq>0){p.kq--;p.kd=nOpts(p.kq)-1}showCursor(true);done();return}
+  if(key==='ArrowRight'||key==='ArrowLeft'){p.kq=Math.max(0,Math.min(N-1,p.kq+(key==='ArrowRight'?1:-1)));p.kd=0;showCursor(true);done();return}
+  if(key==='Enter'&&e.shiftKey){submit(cur);done();return}
+  if(pick>=0&&pick<nOpts(p.kq)){
+    if(clickOpt(cards()[p.kq],pick)){if(p.kq<N-1){p.kq++;p.kd=0}else p.kd=pick;showCursor(true)}done();return}
+  if(key==='Enter'||key===' '){clickOpt(cards()[p.kq],p.kd);done();return}
 });
 let tx=0,ty=0;
 $('#content').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
