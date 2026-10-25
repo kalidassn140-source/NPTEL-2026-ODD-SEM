@@ -14,6 +14,19 @@
 
 :root[data-theme="light"]{--bg:#f3f5fa;--card:#fff;--ink:#1b2430;--mut:#5b6676;--pri:#2563eb;--priL:#dbe7ff;--ok:#16a34a;--okL:#dcfce7;--bad:#dc2626;--badL:#fee2e2;--line:#dde3ee;--warn:#b45309}
 :root[data-theme="dark"]{--bg:#0f141c;--card:#18202c;--ink:#e8edf5;--mut:#9aa6b8;--pri:#6c9bff;--priL:#1f2f52;--ok:#4ade80;--okL:#12331f;--bad:#f87171;--badL:#3b1717;--line:#2a3547;--warn:#fbbf24}
+
+:root[data-theme="forest"]{--bg:#0d1f17;--card:#14291f;--ink:#e6f4ea;--mut:#9bbfa8;--pri:#d9c26a;--priL:#3a3a1e;--ok:#6ee7a0;--okL:#15402a;--bad:#f87171;--badL:#4a1f1f;--line:#24402f;--warn:#fbbf24}
+:root[data-theme="dragon"]{--bg:#1a0f14;--card:#261820;--ink:#f8e9e4;--mut:#c9a39a;--pri:#ff7a3d;--priL:#4a2418;--ok:#7ee08f;--okL:#1d3a24;--bad:#ff5d6c;--badL:#4a1a22;--line:#43262e;--warn:#fbbf24}
+:root[data-theme="ocean"]{--bg:#e6f8fb;--card:#ffffff;--ink:#12384a;--mut:#4f7a8c;--pri:#0e9fbc;--priL:#cdeff6;--ok:#12a37f;--okL:#d6f5ea;--bad:#d9456b;--badL:#fde2ea;--line:#bfe3ea;--warn:#b45309}
+:root[data-theme="wizard"]{--bg:#120f2b;--card:#1b1740;--ink:#ece9ff;--mut:#a9a3d9;--pri:#a78bfa;--priL:#2e2766;--ok:#5eead4;--okL:#12363a;--bad:#fb7185;--badL:#46162a;--line:#332d6e;--warn:#fcd34d}
+:root[data-theme="fairy"]{--bg:#fdf0f8;--card:#ffffff;--ink:#3b1f3f;--mut:#85658a;--pri:#d946ef;--priL:#f8d9fb;--ok:#22a06b;--okL:#d9f6e6;--bad:#e11d48;--badL:#ffe0e6;--line:#f1d2ef;--warn:#b45309}
+:root[data-theme="royal"]{--bg:#f6efe0;--card:#fffaf0;--ink:#3b2a14;--mut:#7a6548;--pri:#b7791f;--priL:#f3e2b8;--ok:#3f8f4f;--okL:#dcf0de;--bad:#b4352a;--badL:#f8dcd8;--line:#e3d3ae;--warn:#92400e}
+:root[data-theme="forest"] body{background-image:radial-gradient(circle at 15% 10%,#1d4a33 0,transparent 45%),radial-gradient(circle at 85% 90%,#3a3a1e 0,transparent 40%);background-attachment:fixed}
+:root[data-theme="dragon"] body{background-image:radial-gradient(circle at 80% 8%,#5a1f1a 0,transparent 45%),radial-gradient(circle at 10% 95%,#3b1530 0,transparent 40%);background-attachment:fixed}
+:root[data-theme="ocean"] body{background-image:radial-gradient(circle at 10% 8%,#b8ecf5 0,transparent 45%),radial-gradient(circle at 90% 92%,#c9f3e6 0,transparent 40%);background-attachment:fixed}
+:root[data-theme="wizard"] body{background-image:radial-gradient(circle at 20% 10%,#33297a 0,transparent 45%),radial-gradient(circle at 85% 90%,#1a3a6a 0,transparent 40%);background-attachment:fixed}
+:root[data-theme="fairy"] body{background-image:radial-gradient(circle at 12% 8%,#fbd0f3 0,transparent 45%),radial-gradient(circle at 88% 92%,#d6e8ff 0,transparent 40%);background-attachment:fixed}
+:root[data-theme="royal"] body{background-image:radial-gradient(circle at 12% 8%,#efd9a0 0,transparent 45%),radial-gradient(circle at 90% 92%,#e8c9a0 0,transparent 40%);background-attachment:fixed}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 header{text-align:center;padding:18px 14px 8px;position:relative}
@@ -92,6 +105,18 @@ th:first-child,td:first-child{text-align:left}
 .card.kb{outline:3px solid var(--pri);outline-offset:2px}
 #slist .card{scroll-margin-top:70px}
 .leg{font-size:.82rem;margin:2px 0 6px}
+#welcome{position:fixed;inset:0;display:none;z-index:30;align-items:center;justify-content:center;background:var(--bg);padding:16px;text-align:center;overflow:auto}
+#welcome.show{display:flex}
+#welcome .wc{max-width:520px;width:100%;padding:28px 22px}
+#welcome .av{margin:0 auto 12px;width:180px;height:180px;font-size:3.4rem;border-width:4px}
+#course{cursor:pointer}
+.chip{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.78rem;margin:2px;border:1px solid var(--line);background:var(--bg);color:var(--mut)}
+.chip.ok{background:var(--okL);color:var(--ok);border-color:var(--ok)}
+.chip.mid{background:var(--priL);color:var(--pri);border-color:var(--pri)}
+.chip.bad{background:var(--badL);color:var(--bad);border-color:var(--bad)}
+#welcome h2{margin:6px 0;font-size:1.8rem}
+body.nosel{-webkit-user-select:none;user-select:none}
+body.nosel input,body.nosel textarea{-webkit-user-select:text;user-select:text}
 #modal label{display:block;margin:10px 0 3px;font-weight:600;font-size:.9rem}
 #modal input[type=text]{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
 input[type=number]{width:70px;padding:5px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
@@ -101,12 +126,22 @@ select{padding:6px;border-radius:8px;border:1px solid var(--line);background:var
 <body>
 <header>
   <button class="btn" id="adminBtn" data-act="admin">⚙ Admin</button>
-  <h1 id="course"></h1>
+  <h1 id="course" data-act="home" title="Back to the welcome page"></h1>
   <div class="prof" id="prof"></div>
   <div id="verify"></div>
 </header>
 <nav><div id="tabs" role="tablist"></div></nav>
 <main id="content"></main>
+
+<div id="welcome"><div class="card wc">
+  <div id="wAv"></div>
+  <h2 id="wHi"></h2>
+  <div id="wCourse" style="font-weight:600"></div>
+  <p id="wMsg" class="mut" style="font-size:1rem"></p>
+  <div id="wStats" style="margin:14px 0"></div>
+  <button class="btn pri" data-act="wstart" style="font-size:1.05rem;padding:10px 26px">Start ▶</button>
+  <div class="mut" style="margin-top:8px">Press Enter to begin</div>
+</div></div>
 
 <div id="modal"><div class="card" id="adm">
   <h3 style="margin:0 0 6px">Admin panel</h3>
@@ -116,7 +151,7 @@ select{padding:6px;border-radius:8px;border:1px solid var(--line);background:var
   <div class="bar"><button class="btn" data-act="rmphoto">Remove saved photo</button></div>
   <h4>Appearance</h4>
   <label for="setTheme">Theme</label>
-  <select id="setTheme" data-set="theme"><option value="auto">Automatic (follow device)</option><option value="light">Light</option><option value="dark">Dark</option></select>
+  <select id="setTheme" data-set="theme"><option value="auto">Automatic (follow device)</option><option value="light">Light</option><option value="dark">Dark</option><optgroup label="Fantasy"><option value="forest">🌲 Enchanted Forest</option><option value="dragon">🐉 Dragon Fire</option><option value="ocean">🧜 Mermaid Lagoon</option><option value="wizard">🧙 Midnight Wizard</option><option value="fairy">🧚 Fairy Blossom</option><option value="royal">🏰 Royal Castle</option></optgroup></select>
   <label>Colours</label>
   <div class="cg">
     <label>Accent<input type="color" id="col-pri" data-set="c.pri"></label>
@@ -140,6 +175,21 @@ select{padding:6px;border-radius:8px;border:1px solid var(--line);background:var
   <h4>Reports</h4>
   <div class="bar"><select id="repWeek" style="width:auto"></select><button class="btn" data-act="repweek">Week report</button><button class="btn" data-act="repall">All weeks report</button><button class="btn" data-act="repoverall">Overall report</button></div>
   <div class="mut">Opens a printable report in a new tab (use Print / Save as PDF there). It uses your latest saved test attempts.</div>
+  <h4>Welcome page</h4>
+  <label style="display:flex;gap:8px;align-items:center;font-weight:500;margin:0"><input type="checkbox" id="setWelcome" data-set="welcome"> Show the welcome page when the site opens</label>
+  <label for="setWmsg">Welcome message</label><input type="text" id="setWmsg" data-set="wmsg">
+  <h4>Content protection</h4>
+  <div style="display:grid;gap:6px">
+    <label style="display:flex;gap:8px;align-items:center;font-weight:500;margin:0"><input type="checkbox" id="nc-select" data-set="nc.select"> Block text selection and dragging</label>
+    <label style="display:flex;gap:8px;align-items:center;font-weight:500;margin:0"><input type="checkbox" id="nc-copy" data-set="nc.copy"> Block copy</label>
+    <label style="display:flex;gap:8px;align-items:center;font-weight:500;margin:0"><input type="checkbox" id="nc-cut" data-set="nc.cut"> Block cut</label>
+    <label style="display:flex;gap:8px;align-items:center;font-weight:500;margin:0"><input type="checkbox" id="nc-paste" data-set="nc.paste"> Block paste</label>
+    <label style="display:flex;gap:8px;align-items:center;font-weight:500;margin:0"><input type="checkbox" id="nc-menu" data-set="nc.menu"> Block right-click menu</label>
+    <label style="display:flex;gap:8px;align-items:center;font-weight:500;margin:0"><input type="checkbox" id="nc-keys" data-set="nc.keys"> Block select-all and view-source keys (Ctrl+A, Ctrl+U)</label>
+  </div>
+  <div class="mut" id="blkInfo" style="margin-top:6px"></div>
+  <div class="bar"><button class="btn" data-act="clearlog">Clear attempt log</button></div>
+  <div class="mut">This works inside the browser only. It stops casual copying but cannot stop screenshots, developer tools or a browser with scripts turned off.</div>
   <h4>Keyboard shortcuts</h4>
   <ul class="kl">
     <li><b>Practice:</b> ↑ ↓ choose option · Enter select (or next question once answered) · 1-4 / A-D pick option · ← → previous / next question · H hint · S show answer · J justification · R reset · M switch to Test</li>
@@ -150,7 +200,7 @@ select{padding:6px;border-radius:8px;border:1px solid var(--line);background:var
   <div class="bar" style="justify-content:flex-end;margin-top:14px">
     <button class="btn" data-act="resetall" style="color:var(--bad)">Reset all data</button>
     <button class="btn" data-act="closeadmin">Close</button>
-    <button class="btn pri" data-act="saveadmin">Save name</button>
+    <button class="btn pri" data-act="saveadmin">Save changes</button>
   </div>
 </div></div>
 
@@ -419,15 +469,18 @@ const L='ABCDEF';
 const BY={};ALL.forEach(q=>BY[q.id]=q);
 const TABS=[...Array(13).keys()].map(w=>({k:'w'+w,t:'Week '+w})).concat([{k:'overall',t:'Overall Questions'},{k:'numeric',t:'Numerical Questions'},{k:'marks',t:'Mark Sheet'},{k:'study',t:'Study (Answer Key)'}]);
 const LS='i40prep_v1';
-const DEFS=()=>({name:'Your Name',photo:'',marks:{},set:{theme:'auto',c:{},font:16,w:860,pad:14,t:{week:0,overall:0,numeric:0}}});
+const DEFS=()=>({name:'Your Name',photo:'',marks:{},log:{},set:{theme:'auto',welcome:true,wmsg:'Ready to practise? Pick a week and begin.',c:{},nc:{select:true,copy:true,cut:true,paste:true,menu:true,keys:true},font:16,w:860,pad:14,t:{week:0,overall:0,numeric:0}}});
 let S=DEFS();
 try{Object.assign(S,JSON.parse(localStorage.getItem(LS)||'{}'))}catch(e){}
-function normSet(){const d=DEFS().set;S.set=Object.assign(d,S.set||{});S.set.c=S.set.c||{};S.set.t=Object.assign({week:0,overall:0,numeric:0},S.set.t||{})}
+function normSet(){const d=DEFS().set;S.set=Object.assign(d,S.set||{});S.set.c=S.set.c||{};
+  S.set.nc=Object.assign({select:true,copy:true,cut:true,paste:true,menu:true,keys:true},S.set.nc||{});
+  if(S.set.nocopy===false){Object.keys(S.set.nc).forEach(k=>S.set.nc[k]=false)}delete S.set.nocopy;S.set.t=Object.assign({week:0,overall:0,numeric:0},S.set.t||{})}
 normSet();
 const CMAP={pri:'--pri',ok:'--ok',bad:'--bad',bg:'--bg',card:'--card',ink:'--ink'};
 function applySettings(){
   const r=document.documentElement,st=S.set;
   if(st.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',st.theme);
+  document.body.classList.toggle('nosel',!!st.nc.select);
   r.style.fontSize=st.font+'px';
   r.style.setProperty('--maxw',st.w+'px');r.style.setProperty('--cpad',st.pad+'px');
   r.style.setProperty('--opad',Math.round(st.pad*.75)+'px '+Math.round(st.pad*.9)+'px');
@@ -437,11 +490,42 @@ function applySettings(){
   if(st.c.ok)r.style.setProperty('--okL','color-mix(in srgb,'+st.c.ok+' 16%,var(--card))');
   if(st.c.bad)r.style.setProperty('--badL','color-mix(in srgb,'+st.c.bad+' 16%,var(--card))');
 }
+function updBlk(){
+  const el=document.getElementById('blkInfo');if(!el)return;
+  const g=S.log||{},n=x=>g[x]||0;
+  el.textContent=`Blocked attempts: copy ${n('copy')} · cut ${n('cut')} · paste ${n('paste')} · right-click ${n('contextmenu')} · drag ${n('dragstart')} · select-all/view-source ${n('key')}`+(g.last?` · last: ${new Date(g.last).toLocaleString()}`:'');
+}
+function blkLog(t){S.log=S.log||{};S.log[t]=(S.log[t]||0)+1;S.log.last=Date.now();save();updBlk()}
+const NCF={copy:'copy',cut:'cut',paste:'paste',contextmenu:'menu',dragstart:'select'};
+Object.keys(NCF).forEach(ev=>document.addEventListener(ev,e=>{if(!S.set.nc[NCF[ev]])return;e.preventDefault();blkLog(ev)},true));
+document.addEventListener('selectstart',e=>{if(!S.set.nc.select)return;const t=e.target.nodeType===1?e.target:e.target.parentElement;if(t&&/INPUT|TEXTAREA/.test(t.tagName))return;e.preventDefault()},true);
+document.addEventListener('keydown',e=>{if(!S.set.nc.keys||!(e.ctrlKey||e.metaKey))return;const k=(e.key||'').toLowerCase();
+  if(k==='u'||(k==='a'&&!/INPUT|TEXTAREA/.test(e.target.tagName))){e.preventDefault();blkLog('key')}},true);
+function ncHTML(){const n=S.set.nc,ev=[];if(n.copy)ev.push('copy');if(n.cut)ev.push('cut');if(n.paste)ev.push('paste');if(n.menu)ev.push('contextmenu');if(n.select)ev.push('dragstart');
+  if(!ev.length&&!n.select)return '';
+  return (n.select?'<style>body{-webkit-user-select:none;user-select:none}</style>':'')+(ev.length?'<script>'+JSON.stringify(ev)+'.forEach(function(v){document.addEventListener(v,function(x){x.preventDefault()})})<'+'/script>':'')}
 function hex6(v){v=(v||'').trim();if(/^#[0-9a-f]{3}$/i.test(v))v='#'+v[1]+v[1]+v[2]+v[2]+v[3]+v[3];return /^#[0-9a-f]{6}$/i.test(v)?v:'#000000'}
+function renderWelcome(){
+  $('#wAv').innerHTML=S.photo?`<img class="av" src="${S.photo}" alt="">`:`<img class="av" src="images/my-image.jpg" alt="" onerror="this.outerHTML=phHTML()">`;
+  $('#wHi').textContent='Welcome, '+S.name+'!';
+  $('#wCourse').textContent=COURSE;
+  $('#wMsg').textContent=S.set.wmsg||'';
+  const wk=[...Array(13).keys()].map(w=>'w'+w),M=k=>S.marks[k]&&S.marks[k].latest?S.marks[k]:null;
+  const done=wk.filter(M),bestSum=done.reduce((a,k)=>a+S.marks[k].best.c,0);
+  const avg=done.length?Math.round(done.reduce((a,k)=>a+S.marks[k].best.pct,0)/done.length*10)/10:0;
+  const tries=Object.keys(S.marks).reduce((a,k)=>a+(S.marks[k].attempts||0),0);
+  const last=Object.keys(S.marks).reduce((a,k)=>Math.max(a,M(k)?S.marks[k].latest.date:0),0);
+  const pct=Math.round(done.length/13*100);
+  const chip=(label,k)=>{const m=M(k);if(!m)return `<span class="chip">${label}</span>`;const v=m.best.pct;return `<span class="chip ${v>=80?'ok':v>=60?'mid':'bad'}">${label} · ${v}%</span>`};
+  $('#wStats').innerHTML=`<div class="leg"><b>Completion: ${done.length}/13 weeks tested (${pct}%)</b></div><div class="pb" style="height:12px;margin:4px 0 12px"><i style="width:${pct}%"></i></div>
+  <div class="sum"><div><b>${bestSum}/195</b>Best weekly score</div><div><b>${avg}%</b>Average (best)</div><div><b>${tries}</b>Tests taken</div></div>
+  <div style="margin-top:10px">${wk.map(k=>chip('Week '+k.slice(1),k)).join('')}${chip('Overall','overall')}${chip('Numerical','numeric')}</div>
+  <div class="mut" style="margin-top:6px;font-size:.78rem">Green 80%+ · blue 60–79% · red below 60% · grey not attempted${last?' · last test '+new Date(last).toLocaleDateString():''}</div>`;
+}
 function populateAdmin(){
   const st=S.set,cs=getComputedStyle(document.documentElement);
   $('#inName').value=S.name;$('#inPhoto').value='';
-  $('#setTheme').value=st.theme;
+  $('#setTheme').value=st.theme;$('#setWelcome').checked=!!st.welcome;$('#setWmsg').value=st.wmsg||'';Object.keys(st.nc).forEach(k=>{const el=$('#nc-'+k);if(el)el.checked=!!st.nc[k]});updBlk();
   for(const k in CMAP)$('#col-'+k).value=hex6(st.c[k]||cs.getPropertyValue(CMAP[k]));
   $('#setFont').value=st.font;$('#setW').value=st.w;$('#setPad').value=st.pad;
   $('#v-font').textContent=st.font+' px';$('#v-w').textContent=st.w+' px';$('#v-pad').textContent=st.pad+' px';
@@ -453,7 +537,8 @@ document.getElementById('modal').addEventListener('input',e=>{
   const st=S.set;
   if(k.startsWith('c.'))st.c[k.slice(2)]=t.value;
   else if(k.startsWith('t.'))st.t[k.slice(2)]=Math.max(0,Math.min(300,+t.value||0));
-  else st[k]=t.type==='range'?+t.value:t.value;
+  else if(k.startsWith('nc.'))st.nc[k.slice(3)]=t.checked;
+  else st[k]=t.type==='checkbox'?t.checked:t.type==='range'?+t.value:t.value;
   applySettings();save();
   $('#v-font').textContent=st.font+' px';$('#v-w').textContent=st.w+' px';$('#v-pad').textContent=st.pad+' px';
   if(k==='theme'){for(const c in CMAP){if(!st.c[c])$('#col-'+c).value=hex6(getComputedStyle(document.documentElement).getPropertyValue(CMAP[c]))}}
@@ -643,7 +728,7 @@ function buildReport(kind,wk){
   const att=keys.filter(k=>S.marks[k]&&S.marks[k].latest);
   const avg=att.length?Math.round(att.reduce((a,k)=>a+S.marks[k].latest.pct,0)/att.length*10)/10:0;
   const weak=keys.filter(k=>{const m=S.marks[k];return !m||!m.latest||m.best.pct<60}).map(tname);
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title><style>body{font:14px/1.5 system-ui,sans-serif;margin:24px auto;padding:0 14px;color:#1b2430;max-width:1000px}h1{margin:0;font-size:22px}table{border-collapse:collapse;width:100%;margin:8px 0}th,td{border:1px solid #d1d5db;padding:5px 7px;text-align:left;vertical-align:top}th{background:#f3f4f6}button{padding:6px 12px;margin-right:8px}@media print{.np{display:none}}</style></head><body><div class="np"><button onclick="window.print()">Print / Save as PDF</button><button onclick="const a=document.createElement('a');a.href=location.href;a.download='report.html';a.click()">Download</button></div><h1>${esc(COURSE)}</h1><h2>${title}</h2><p><b>${esc(S.name)}</b> · Generated ${new Date().toLocaleString()}</p><p>Tests attempted: <b>${att.length}/${keys.length}</b> · Average of latest scores: <b>${avg}%</b></p>${chartSVG(c,keys)}<p style="font-size:12px"><span style="color:${c.best}">■</span> Best % &nbsp; <span style="color:${c.latest}">■</span> Latest %</p><h3>Summary</h3><table><tr><th>Test</th><th>Latest</th><th>%</th><th>Wrong</th><th>Unanswered</th><th>Best</th><th>Attempts</th><th>Time</th></tr>${summaryRows(keys)}</table>${kind!=='week'?`<h3>Needs revision (best below 60% or not attempted)</h3><p>${weak.length?weak.map(esc).join(', '):'None, great work!'}</p>`:''}${det.map(detailHTML).join('')}</body></html>`;
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title><style>body{font:14px/1.5 system-ui,sans-serif;margin:24px auto;padding:0 14px;color:#1b2430;max-width:1000px}h1{margin:0;font-size:22px}table{border-collapse:collapse;width:100%;margin:8px 0}th,td{border:1px solid #d1d5db;padding:5px 7px;text-align:left;vertical-align:top}th{background:#f3f4f6}button{padding:6px 12px;margin-right:8px}@media print{.np{display:none}}</style>${ncHTML()}</head><body><div class="np"><button onclick="window.print()">Print / Save as PDF</button><button onclick="const a=document.createElement('a');a.href=location.href;a.download='report.html';a.click()">Download</button></div><h1>${esc(COURSE)}</h1><h2>${title}</h2><p><b>${esc(S.name)}</b> · Generated ${new Date().toLocaleString()}</p><p>Tests attempted: <b>${att.length}/${keys.length}</b> · Average of latest scores: <b>${avg}%</b></p>${chartSVG(c,keys)}<p style="font-size:12px"><span style="color:${c.best}">■</span> Best % &nbsp; <span style="color:${c.latest}">■</span> Latest %</p><h3>Summary</h3><table><tr><th>Test</th><th>Latest</th><th>%</th><th>Wrong</th><th>Unanswered</th><th>Best</th><th>Attempts</th><th>Time</th></tr>${summaryRows(keys)}</table>${kind!=='week'?`<h3>Needs revision (best below 60% or not attempted)</h3><p>${weak.length?weak.map(esc).join(', '):'None, great work!'}</p>`:''}${det.map(detailHTML).join('')}</body></html>`;
 }
 function openReport(kind,wk){
   const url=URL.createObjectURL(new Blob([buildReport(kind,wk)],{type:'text/html'}));
@@ -709,6 +794,9 @@ document.addEventListener('click',e=>{
     case 'saveadmin':S.name=$('#inName').value.trim()||'Your Name';save();renderHeader();$('#modal').classList.remove('show');return;
     case 'rmphoto':S.photo='';save();renderHeader();return;
     case 'resetall':if(confirm('Erase name, photo, settings and all scores?')){S=DEFS();save();applySettings();renderHeader();$('#modal').classList.remove('show');renderContent()}return;
+    case 'home':if(S.set.welcome){renderWelcome();$('#welcome').classList.add('show');window.scrollTo({top:0})}return;
+    case 'wstart':$('#welcome').classList.remove('show');return;
+    case 'clearlog':S.log={};save();updBlk();return;
     case 'resetcolors':S.set.c={};save();applySettings();populateAdmin();return;
     case 'repweek':openReport('week',+$('#repWeek').value);return;
     case 'repall':openReport('weeks');return;
@@ -739,6 +827,7 @@ function showCursor(scroll){
 function clickAct(sel){const b=document.querySelector('#content '+sel);if(b&&!b.disabled){b.click();return true}return false}
 function clickOpt(card,d){const el=card&&card.querySelectorAll('.opts .opt')[d];if(el&&el.dataset.o!==undefined){el.click();return true}return false}
 document.addEventListener('keydown',e=>{
+  if($('#welcome').classList.contains('show')){if(e.key==='Enter'||e.key===' '){$('#welcome').classList.remove('show');e.preventDefault()}return}
   const t=e.target;
   if(/INPUT|TEXTAREA|SELECT/.test(t.tagName)||$('#modal').classList.contains('show'))return;
   const key=e.key;
@@ -798,6 +887,7 @@ function tick(){
 setInterval(tick,1000);
 window.addEventListener('load',mathify);
 applySettings();renderHeader();selfCheck();renderTabs();renderContent();
+if(S.set.welcome){renderWelcome();$('#welcome').classList.add('show')}
 </script>
 </body>
 </html>
