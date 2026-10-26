@@ -121,6 +121,28 @@ body.nosel input,body.nosel textarea{-webkit-user-select:text;user-select:text}
 #modal input[type=text]{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
 input[type=number]{width:70px;padding:5px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
 select{padding:6px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+/* Round 1 exam improvements */
+body.exam-focus header,body.exam-focus nav{display:none!important}
+body.exam-focus #content>h2,body.exam-focus #content>.mode-bar,body.exam-focus #content>.tools-bar{display:none!important}
+body.exam-focus main{max-width:980px;padding-top:clamp(18px,5vh,52px);min-height:100vh;display:flex;flex-direction:column;justify-content:flex-start}
+.exam-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 10px}
+.exam-question{width:100%;max-width:900px;margin:12px auto;box-shadow:0 10px 32px #0000000b}
+.exam-question .qt{font-size:clamp(1.05rem,2.2vw,1.35rem);line-height:1.55}
+.mark-chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:var(--bg);color:var(--mut);border-radius:99px;padding:3px 9px;font-size:.78rem;font-weight:650;white-space:nowrap}
+.exam-nav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:12px auto;max-width:900px;max-height:150px;overflow:auto;padding:6px;border:1px solid var(--line);border-radius:10px}
+.exam-nav button{min-width:36px;min-height:36px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;cursor:pointer}
+.exam-nav button.answered{border-color:var(--pri);background:var(--priL);color:var(--pri);font-weight:700}
+.exam-nav button.current{outline:2px solid var(--pri);outline-offset:2px}
+.exam-actions{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;max-width:900px;width:100%;margin:8px auto}
+.score-layout{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.score-ring{--score-pct:0%;width:116px;height:116px;flex:none;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--pri) var(--score-pct),var(--line) 0);position:relative}
+.score-ring:before{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--card)}
+.score-ring span{position:relative;z-index:1;text-align:center;font-weight:800;font-size:1.1rem;line-height:1.2}
+.score-ring small{display:block;font-size:.68rem;color:var(--mut);font-weight:600}
+.review-filters{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.review-filters .on{border-color:var(--pri);background:var(--priL);color:var(--pri);font-weight:700}
+.question-count{font-size:.85rem;color:var(--mut)}
+@media(max-width:560px){body.exam-focus main{padding:14px 10px 28px}.exam-question{padding:12px}.score-ring{width:96px;height:96px}.exam-nav button{min-width:32px;min-height:32px}}
 </style>
 </head>
 <body>
@@ -467,7 +489,10 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const L='ABCDEF';
 const BY={};ALL.forEach(q=>BY[q.id]=q);
-const TABS=[...Array(13).keys()].map(w=>({k:'w'+w,t:'Week '+w})).concat([{k:'overall',t:'Overall Questions'},{k:'numeric',t:'Numerical Questions'},{k:'marks',t:'Mark Sheet'},{k:'study',t:'Study (Answer Key)'}]);
+const MOCKS=[...Array(5).keys()].map(n=>({k:'mock'+(n+1),t:'Mock Test '+(n+1)}));
+// Each mock test draws 30 distinct questions from the existing verified bank; the 150 assigned questions are unique across all five papers. Answer keys and justifications remain attached to the original question records.
+const MOCK_IDS=Object.fromEntries(MOCKS.map((m,n)=>[m.k,Array.from({length:30},(_,i)=>ALL[((n*30+i)*17)%ALL.length].id)]));
+const TABS=[...Array(13).keys()].map(w=>({k:'w'+w,t:'Week '+w})).concat([{k:'overall',t:'Overall Questions'},{k:'numeric',t:'Numerical Questions'}],MOCKS,[{k:'marks',t:'Mark Sheet'},{k:'study',t:'Week Study / Answer Key'},{k:'mockstudy',t:'Mock Study / Answer Key'}]);
 const LS='i40prep_v1';
 const DEFS=()=>({name:'Your Name',photo:'',marks:{},log:{},set:{theme:'auto',welcome:true,wmsg:'Ready to practise? Pick a week and begin.',c:{},nc:{select:true,copy:true,cut:true,paste:true,menu:true,keys:true},font:16,w:860,pad:14,t:{week:0,overall:0,numeric:0}}});
 let S=DEFS();
@@ -546,7 +571,7 @@ document.getElementById('modal').addEventListener('input',e=>{
 function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){alert('Could not save to browser storage (it may be full).')}}
 let cur='w0';
 const P={};
-function base(k){if(k==='overall')return ALL;if(k==='numeric')return ALL.filter(q=>q.num);return ALL.filter(q=>q.w===+k.slice(1))}
+function base(k){if(k==='overall')return ALL;if(k==='numeric')return ALL.filter(q=>q.num);if(MOCK_IDS[k])return MOCK_IDS[k].map(id=>BY[id]).filter(Boolean);return ALL.filter(q=>q.w===+k.slice(1))}
 function pool(k){if(!P[k])P[k]={mode:'practice',order:base(k).map(q=>q.id),so:false,perm:{},idx:0,ps:{},ta:{},sub:null,tmin:0,tEnd:0,kd:0,kq:0,_li:-1};return P[k]}
 function shuf(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
 function fixed(q){return q.o.length<4||/all of|none of|both|above/i.test(q.o.join('|'))}
@@ -587,16 +612,18 @@ function step(d){const i=TABS.findIndex(t=>t.k===cur)+d;if(i>=0&&i<TABS.length)g
 /* ---------- content ---------- */
 function mathify(){if(window.renderMathInElement)try{renderMathInElement($('#content'),{delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false})}catch(e){}}
 function renderContent(){
-  if(cur==='marks')renderMarks();else if(cur==='study')renderStudy();else{renderPool(cur);showCursor(false)}
+  document.body.classList.remove('exam-focus');
+  if(cur==='marks')renderMarks();else if(cur==='study')renderStudy();else if(cur==='mockstudy')renderMockStudy();else{renderPool(cur);showCursor(false)}
+  if(!/^(marks|study|mockstudy)$/.test(cur)){const p=pool(cur);if(p.mode==='test'&&!p.sub&&p.focus!==false)document.body.classList.add('exam-focus')}
   mathify();
 }
-function titleFor(k){return k==='overall'?'Overall Questions (all weeks)':k==='numeric'?'Numerical Questions':'Week '+k.slice(1)}
+function titleFor(k){if(k==='overall')return 'Overall Questions (all weeks)';if(k==='numeric')return 'Numerical Questions';if(MOCK_IDS[k])return 'Mock Test '+k.slice(4);return 'Week '+k.slice(1)}
 function renderPool(k){
   const p=pool(k),N=p.order.length;
   let h=`<h2 style="margin:6px 0">${titleFor(k)} <span class="mut">(${N} questions)</span></h2>`;
   if(k==='numeric')h+=`<div class="mut">Questions whose answer is a number, rate, range, count or formula-based value, collected from all weeks. Worked step-by-step solutions are AI-added where a calculation is possible.</div>`;
-  h+=`<div class="bar"><div class="seg"><button class="${p.mode==='practice'?'on':''}" data-act="mode" data-m="practice">Practice</button><button class="${p.mode==='test'?'on':''}" data-act="mode" data-m="test">Test</button></div></div>`;
-  h+=`<div class="bar"><button class="btn" data-act="shuffle">🔀 Shuffle Questions</button><button class="btn" data-act="shuffle">↻ Reshuffle</button><button class="btn ${p.so?'on':''}" data-act="so">Shuffle Options: ${p.so?'ON':'OFF'}</button><button class="btn" data-act="orig">Original Order</button></div>`;
+  h+=`<div class="bar mode-bar"><div class="seg"><button class="${p.mode==='practice'?'on':''}" data-act="mode" data-m="practice">Practice</button><button class="${p.mode==='test'?'on':''}" data-act="mode" data-m="test">Test</button></div><span class="mark-chip">1 mark per question · Total ${N} marks</span></div>`;
+  h+=`<div class="bar tools-bar"><button class="btn" data-act="shuffle">🔀 Shuffle Questions</button><button class="btn" data-act="shuffle">↻ Reshuffle</button><button class="btn ${p.so?'on':''}" data-act="so">Shuffle Options: ${p.so?'ON':'OFF'}</button><button class="btn" data-act="orig">Original Order</button></div>`;
   h+=p.mode==='practice'?renderPractice(k,p):renderTest(k,p);
   $('#content').innerHTML=h;
 }
@@ -607,7 +634,7 @@ function renderPractice(k,p){
   const q=list[p.idx],st=p.ps[q.id]||(p.ps[q.id]={wrong:[],ok:false,last:null,hint:false,show:false,just:false});
   const pm=perm(p,q);
   let h=`<div class="prog"><div style="width:${(p.idx+1)/N*100}%"></div></div><div class="card">`;
-  h+=`<div class="meta"><span class="badge">${src(q)}</span><b>Question ${p.idx+1} / ${N}</b></div><div class="qt">${esc(q.q)}</div>${diagram(q)}<div class="opts">`;
+  h+=`<div class="meta"><span class="badge">${src(q)}</span><b>Question ${p.idx+1} / ${N}</b><span class="mark-chip">1 mark</span></div><div class="qt">${esc(q.q)}</div>${diagram(q)}<div class="opts">`;
   h+=pm.map((o,d)=>{let c='opt';if(st.wrong.includes(o))c+=' bad';if(st.ok&&o===q.a)c+=' ok';else if(st.show&&o===q.a)c+=' rev';
     return `<button class="${c}" data-act="pick" data-id="${q.id}" data-o="${o}"><b>${L[d]}</b><span>${esc(q.o[o])}</span></button>`}).join('')+'</div>';
   if(st.last==='ok')h+=`<div class="fb ok">✔ Correct option <span class="beside">💡 ${esc(q.h||'Well done!')}</span></div>`;
@@ -633,24 +660,35 @@ function timerUI(k,p){
   const lim=limitFor(k),v=p.tmin||lim;
   return `<div class="bar"><label>⏱ Timer (min): <input type="number" id="tmin" min="0" max="300" value="${v}"></label><button class="btn" data-act="tstart">Start timer</button><b id="tspan"></b><span class="mut">${lim?`Default ${lim} min (set in Admin panel); starts at your first answer.`:'No default limit (set one in the Admin panel).'}</span></div>`;
 }
+function reviewStatus(p,q){const a=p.ta[q.id];return a===undefined?'unanswered':a===q.a?'correct':'wrong'}
 function renderTest(k,p){
   const list=p.order.map(id=>BY[id]),N=list.length;
   let h='';
   if(!p.sub){
+    const i=Math.max(0,Math.min(p.kq||0,N-1));p.kq=i;
+    h+=`<div class="exam-top"><div><b>${esc(titleFor(k))}</b><div class="mut">${N} questions · 1 mark each · Total ${N} marks</div></div><button class="btn" data-act="focus">${p.focus===false?'⛶ Enter focus mode':'Exit focus mode'}</button></div>`;
     h+=timerUI(k,p);
-    h+=`<div class="bar"><b>Answered <span id="cnt">${Object.keys(p.ta).length}</span>/${N}</b></div>`;
-    h+=list.map((q,i)=>tq(p,q,i,false)).join('');
-    h+=`<div class="bar" style="justify-content:center"><button class="btn pri" data-act="submit">💾 Save Answers</button></div>`;
+    h+=`<div class="bar" style="justify-content:space-between"><b>Answered <span id="cnt">${Object.keys(p.ta).length}</span>/${N}</b><span class="mark-chip">Question ${i+1} of ${N} · 1 mark</span></div>`;
+    h+=`<div class="prog"><div style="width:${(Object.keys(p.ta).length)/N*100}%"></div></div>`;
+    h+=`<div class="exam-question">${tq(p,list[i],i,false)}</div>`;
+    h+=`<div class="exam-actions"><button class="btn" data-act="tprev" ${i===0?'disabled':''}>← Previous</button><span class="question-count">Question ${i+1} / ${N}</span><button class="btn pri" data-act="tnext" ${i===N-1?'disabled':''}>Next →</button></div>`;
+    h+=`<div class="exam-nav" aria-label="Question navigation">${list.map((q,j)=>`<button type="button" class="${p.ta[q.id]!==undefined?'answered ':''}${j===i?'current':''}" data-act="tgoto" data-i="${j}" aria-label="Go to question ${j+1}" aria-current="${j===i?'step':'false'}">${j+1}</button>`).join('')}</div>`;
+    h+=`<div class="exam-actions"><span class="mut">Blue numbered buttons are answered questions.</span><button class="btn pri" data-act="submit">💾 Submit test · ${N} marks</button></div>`;
   }else{
-    const r=p.sub;
-    h+=`<div class="card"><h3 style="margin:0 0 8px">Score: ${r.c}/${r.N} (${r.pct}%)</h3><div class="sum"><div><b style="color:var(--ok)">${r.c}</b>Correct</div><div><b style="color:var(--bad)">${r.w}</b>Wrong</div><div><b>${r.u}</b>Unanswered</div></div><div class="bar" style="margin-top:10px"><button class="btn pri" data-act="retake">Retake test</button></div><div class="mut">Saved to the Mark Sheet.</div></div>`;
-    h+=list.map((q,i)=>tq(p,q,i,true)).join('');
+    const r=p.sub,filter=p.reviewFilter||'all';
+    const pct=Math.max(0,Math.min(100,r.pct));
+    h+=`<div class="card"><div class="score-layout"><div class="score-ring" role="img" aria-label="Score ${r.c} out of ${r.N}, ${r.pct} percent" style="--score-pct:${pct}%"><span>${r.c}/${r.N}<small>${r.pct}%</small></span></div><div style="flex:1;min-width:180px"><h3 style="margin:0 0 5px">Test results</h3><div class="mut">${esc(titleFor(k))} · ${r.N} marks available · ${r.c} marks earned</div><div class="bar"><button class="btn pri" data-act="retake">Retake test</button></div><div class="mut">Saved to the Mark Sheet.</div></div></div>
+      <div class="sum" style="margin-top:14px"><button class="btn ${filter==='correct'?'on':''}" data-act="reviewfilter" data-filter="correct"><b style="color:var(--ok)">${r.c}</b>Correct</button><button class="btn ${filter==='wrong'?'on':''}" data-act="reviewfilter" data-filter="wrong"><b style="color:var(--bad)">${r.w}</b>Wrong</button><button class="btn ${filter==='unanswered'?'on':''}" data-act="reviewfilter" data-filter="unanswered"><b>${r.u}</b>Unanswered</button></div>
+      <div class="review-filters"><button class="btn ${filter==='all'?'on':''}" data-act="reviewfilter" data-filter="all">Review all questions (${N})</button></div></div>`;
+    const filtered=list.map((q,i)=>({q,i,status:reviewStatus(p,q)})).filter(x=>filter==='all'||x.status===filter);
+    h+=`<div class="bar"><b>${filtered.length} ${filter==='all'?'review questions':filter+' answers'}</b></div>`;
+    h+=filtered.map(({q,i})=>tq(p,q,i,true)).join('')||'<div class="card mut">No questions in this category.</div>';
   }
   return h;
 }
 function tq(p,q,i,rev){
   const pm=perm(p,q),sel=p.ta[q.id];
-  let h=`<div class="card q" data-id="${q.id}"><div class="meta"><span class="badge">${src(q)}</span><b>Q${i+1}</b>`;
+  let h=`<div class="card q" data-id="${q.id}"><div class="meta"><span class="badge">${src(q)}</span><b>Q${i+1}</b><span class="mark-chip">1 mark</span>`;
   if(rev)h+=sel===undefined?'<span class="tag">Unanswered</span>':sel===q.a?'<b style="color:var(--ok)">✔ Correct</b>':'<b style="color:var(--bad)">✘ Wrong</b>';
   h+=`</div><div class="qt">${esc(q.q)}</div>${diagram(q)}<div class="opts">`;
   h+=pm.map((o,d)=>{let c='opt';
@@ -674,10 +712,10 @@ function submit(k,auto){
 function fmtT(sec){if(!sec)return '–';return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0')}
 const tname=k=>TABS.find(t=>t.k===k).t;
 function chartSVG(c,keys){
-  const n=keys.length,W=720,H=270,L=34,B=30,T=14,pw=(W-L-10)/n;
+  const n=keys.length,W=900,H=300,L=34,B=42,T=14,pw=(W-L-10)/Math.max(1,n);
   let g='';
   [0,25,50,75,100].forEach(v=>{const y=T+(H-T-B)*(1-v/100);g+=`<line x1="${L}" x2="${W-6}" y1="${y}" y2="${y}" style="stroke:${c.grid}"/><text x="${L-5}" y="${y+4}" text-anchor="end" font-size="10" style="fill:${c.ink}">${v}</text>`});
-  keys.forEach((k,i)=>{const m=S.marks[k],x=L+i*pw,lab=/^w\d+$/.test(k)?'W'+k.slice(1):k==='overall'?'All':'Num';
+  keys.forEach((k,i)=>{const m=S.marks[k],x=L+i*pw,lab=/^w\d+$/.test(k)?'W'+k.slice(1):k==='overall'?'All':k==='numeric'?'Num':MOCK_IDS[k]?'M'+k.slice(4):k;
     g+=`<text x="${x+pw/2}" y="${H-12}" text-anchor="middle" font-size="10" style="fill:${c.ink}">${lab}</text>`;
     if(m&&m.latest)[[m.best.pct,c.best,0,'best'],[m.latest.pct,c.latest,1,'latest']].forEach(([v,col,j,nm])=>{
       const h=(H-T-B)*v/100,bw=Math.min(pw*.34,40),bx=x+pw/2-bw-1+j*(bw+2);
@@ -685,7 +723,7 @@ function chartSVG(c,keys){
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Bar chart of best and latest percentage for each test">${g}</svg>`;
 }
 function renderMarks(){
-  const keys=TABS.filter(t=>t.k!=='marks'&&t.k!=='study').map(t=>t.k);
+  const keys=TABS.filter(t=>!['marks','study','mockstudy'].includes(t.k)).map(t=>t.k);
   let tot=0,best=0,n=0,C=0,Wr=0,U=0;
   keys.forEach(k=>{const m=S.marks[k];if(/^w\d+$/.test(k)){tot+=15;if(m&&m.best){best+=m.best.c;n++}if(m&&m.latest){C+=m.latest.c;Wr+=m.latest.w;U+=m.latest.u}}});
   const T3=C+Wr+U,t=S.set.t;
@@ -699,9 +737,55 @@ function renderMarks(){
     if(!m||!m.latest)return `<tr><td>${tname(k)}</td><td colspan="8" class="mut">Not attempted</td></tr>`;
     const l=m.latest;
     return `<tr><td>${tname(k)}</td><td>${l.c}/${l.N}</td><td>${l.pct}%</td><td>${m.best.c}/${m.best.N} (${m.best.pct}%)</td><td>${m.attempts}</td><td><div class="pb"><i style="width:${m.best.pct}%"></i></div></td><td>${l.lim?l.lim+' min':'–'}</td><td>${fmtT(l.secs)}</td><td class="mut">${new Date(l.date).toLocaleDateString()}</td></tr>`}).join('');
-  h+=`</table></div><div class="bar"><button class="btn" data-act="clearmarks" style="color:var(--bad)">Clear Mark Sheet</button></div>`;
+  h+=`</table></div><div class="bar"><button class="btn pri" data-act="jpgmarks">Download Mark Statement (JPG)</button><button class="btn" data-act="clearmarks" style="color:var(--bad)">Clear Mark Sheet</button></div><div class="mut">JPG statement includes your profile name/photo, weekly scores, mock-test scores, and overall summary.</div>`;
   $('#content').innerHTML=h;
 }
+function downloadJpgMarkStatement(){
+  const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=2250;
+  const ctx=canvas.getContext('2d');if(!ctx){alert('Your browser cannot create the JPG statement.');return}
+  const W=canvas.width,H=canvas.height;
+  ctx.fillStyle='#f3f5fa';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#ffffff';roundRect(ctx,70,70,W-140,H-140,36);ctx.fill();
+  ctx.fillStyle='#1d3557';ctx.fillRect(70,70,W-140,300);
+  ctx.fillStyle='#ffffff';ctx.font='bold 56px system-ui, sans-serif';ctx.fillText('MARK STATEMENT',130,155);
+  ctx.font='30px system-ui, sans-serif';ctx.fillText('Introduction to Industry 4.0 and Industrial Internet of Things',130,215);
+  ctx.font='26px system-ui, sans-serif';ctx.fillText('Generated: '+new Date().toLocaleDateString(),130,275);
+  const drawContent=()=>{
+    const name=(S.name||'Your Name').trim();
+    ctx.fillStyle='#172033';ctx.font='bold 42px system-ui, sans-serif';ctx.fillText(name,360,450);
+    ctx.fillStyle='#667085';ctx.font='26px system-ui, sans-serif';ctx.fillText('Student profile',360,495);
+    let y=590;
+    ctx.fillStyle='#1d3557';ctx.font='bold 32px system-ui, sans-serif';ctx.fillText('WEEKLY MARKS',130,y);y+=35;
+    ctx.fillStyle='#e8eef8';roundRect(ctx,120,y,W-240,66,12);ctx.fill();
+    ctx.fillStyle='#24324a';ctx.font='bold 24px system-ui, sans-serif';ctx.fillText('Week',150,y+42);ctx.fillText('Latest score',600,y+42);ctx.fillText('Best score',1000,y+42);ctx.fillText('Percentage',1280,y+42);y+=66;
+    for(let w=0;w<13;w++){
+      const k='w'+w,m=S.marks[k],latest=m&&m.latest,best=m&&m.best;
+      ctx.fillStyle=w%2?'#f7f9fc':'#ffffff';ctx.fillRect(120,y,W-240,58);
+      ctx.fillStyle='#24324a';ctx.font='26px system-ui, sans-serif';ctx.fillText('Week '+w,150,y+38);ctx.fillText(latest?`${latest.c}/${latest.N}`:'Not attempted',600,y+38);ctx.fillText(best?`${best.c}/${best.N}`:'—',1000,y+38);ctx.fillText(latest?`${latest.pct}%`:'—',1280,y+38);y+=58;
+    }
+    y+=38;ctx.fillStyle='#1d3557';ctx.font='bold 32px system-ui, sans-serif';ctx.fillText('MOCK TEST MARKS',130,y);y+=35;
+    ctx.fillStyle='#e8eef8';roundRect(ctx,120,y,W-240,66,12);ctx.fill();ctx.fillStyle='#24324a';ctx.font='bold 24px system-ui, sans-serif';ctx.fillText('Mock test',150,y+42);ctx.fillText('Latest score',600,y+42);ctx.fillText('Best score',1000,y+42);ctx.fillText('Percentage',1280,y+42);y+=66;
+    for(let n=1;n<=5;n++){
+      const k='mock'+n,m=S.marks[k],latest=m&&m.latest,best=m&&m.best;
+      ctx.fillStyle=n%2?'#f7f9fc':'#ffffff';ctx.fillRect(120,y,W-240,58);ctx.fillStyle='#24324a';ctx.font='26px system-ui, sans-serif';ctx.fillText('Mock Test '+n,150,y+38);ctx.fillText(latest?`${latest.c}/${latest.N}`:'Not attempted',600,y+38);ctx.fillText(best?`${best.c}/${best.N}`:'—',1000,y+38);ctx.fillText(latest?`${latest.pct}%`:'—',1280,y+38);y+=58;
+    }
+    const wkBest=Array.from({length:13},(_,w)=>S.marks['w'+w]).filter(m=>m&&m.best);
+    const wkEarned=wkBest.reduce((a,m)=>a+m.best.c,0),wkPossible=wkBest.reduce((a,m)=>a+m.best.N,0);
+    const mockBest=Array.from({length:5},(_,i)=>S.marks['mock'+(i+1)]).filter(m=>m&&m.best);
+    const mockEarned=mockBest.reduce((a,m)=>a+m.best.c,0),mockPossible=mockBest.reduce((a,m)=>a+m.best.N,0);
+    const latestTests=TABS.filter(t=>!['marks','study','mockstudy'].includes(t.k)).map(t=>S.marks[t.k]).filter(m=>m&&m.latest);
+    const allLatestC=latestTests.reduce((a,m)=>a+m.latest.c,0),allLatestN=latestTests.reduce((a,m)=>a+m.latest.N,0);
+    y+=38;ctx.fillStyle='#1d3557';ctx.font='bold 32px system-ui, sans-serif';ctx.fillText('OVERALL SUMMARY',130,y);y+=28;
+    ctx.fillStyle='#f0f5ff';roundRect(ctx,120,y,W-240,170,20);ctx.fill();ctx.fillStyle='#24324a';ctx.font='bold 27px system-ui, sans-serif';
+    ctx.fillText(`Weekly best total: ${wkEarned}/${wkPossible||0}`,160,y+55);ctx.fillText(`Mock-test best total: ${mockEarned}/${mockPossible||0}`,160,y+105);ctx.fillText(`Latest attempted tests: ${allLatestC}/${allLatestN||0} (${allLatestN?Math.round(allLatestC/allLatestN*1000)/10:0}%)`,800,y+55);
+    ctx.fillStyle='#667085';ctx.font='22px system-ui, sans-serif';ctx.fillText('Scores use the existing question bank and answer keys.',130,H-120);
+    const a=document.createElement('a');a.download='Industry4-IIoT-Mark-Statement.jpg';a.href=canvas.toDataURL('image/jpeg',0.94);a.click();
+  };
+  const drawAvatar=(img)=>{ctx.save();ctx.beginPath();ctx.arc(230,465,92,0,Math.PI*2);ctx.closePath();ctx.clip();if(img){ctx.drawImage(img,138,373,184,184)}else{ctx.fillStyle='#dbe7ff';ctx.fillRect(138,373,184,184);ctx.fillStyle='#2563eb';ctx.font='bold 60px system-ui, sans-serif';ctx.textAlign='center';ctx.fillText((S.name||'?').trim().split(/\s+/).slice(0,2).map(v=>v[0]).join('').toUpperCase(),230,485);ctx.textAlign='left'}ctx.restore();drawContent()};
+  const im=new Image();im.onload=()=>drawAvatar(im);im.onerror=()=>{if(!S.photo){const fallback=new Image();fallback.onload=()=>drawAvatar(fallback);fallback.onerror=()=>drawAvatar(null);fallback.src='images/my-image.jpg'}else drawAvatar(null)};im.src=S.photo||'images/my-image.jpg';
+}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+
 /* ---------- reports ---------- */
 function summaryRows(keys){return keys.map(k=>{const m=S.marks[k];
   if(!m||!m.latest)return `<tr><td>${tname(k)}</td><td colspan="7" style="color:#6b7280">Not attempted</td></tr>`;
@@ -719,7 +803,7 @@ function detailHTML(k){
   return h+'</table>';
 }
 function buildReport(kind,wk){
-  const weeks=[...Array(13).keys()].map(w=>'w'+w),all=weeks.concat(['overall','numeric']);
+  const weeks=[...Array(13).keys()].map(w=>'w'+w),all=weeks.concat(['overall','numeric'],MOCKS.map(m=>m.k));
   let keys,det,title;
   if(kind==='week'){keys=['w'+wk];det=keys;title='Week '+wk+' report'}
   else if(kind==='weeks'){keys=weeks;det=weeks;title='All weeks report'}
@@ -754,10 +838,24 @@ function studyList(){
   }).join('')||'<div class="card mut">No matching questions.</div>';
   mathify();
 }
+/* Separate mock-test study guide: it displays only the questions assigned to the selected mock paper. */
+let MST={k:'mock1',s:''};
+function renderMockStudy(){
+  const chosen=MOCKS.find(m=>m.k===MST.k)||MOCKS[0];
+  const list=(MOCK_IDS[chosen.k]||[]).map(id=>BY[id]).filter(Boolean).filter(q=>!MST.s.trim()||(q.q+' '+q.o.join(' ')+' '+q.e+' '+q.j).toLowerCase().includes(MST.s.trim().toLowerCase()));
+  let h=`<h2 style="margin:6px 0">Mock Test Study: Answer Key &amp; Justifications</h2><div class="mut">This section is separate from Week Study. Choose a mock paper to revise only its assigned questions, correct answers, original justifications, and available concept explanations. Viewing this guide does not affect marks.</div>`;
+  h+=`<div class="bar"><label for="mst">Mock paper:</label><select id="mst">${MOCKS.map(m=>`<option value="${m.k}" ${m.k===chosen.k?'selected':''}>${m.t} (30 questions)</option>`).join('')}</select><input id="msts" type="text" placeholder="Search this mock paper…" value="${esc(MST.s)}" style="flex:1;min-width:160px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit"></div>`;
+  h+=`<div class="mut">Showing ${list.length} of ${(MOCK_IDS[chosen.k]||[]).length} questions for ${chosen.t}.</div>`;
+  h+=list.map(q=>{let z=`<div class="card"><div class="meta"><span class="badge">${src(q)}</span><b>Mock ${chosen.k.slice(4)} · Question ${MOCK_IDS[chosen.k].indexOf(q.id)+1}</b></div><div class="qt">${esc(q.q)}</div>${diagram(q)}<div class="opts">`;
+    z+=q.o.map((o,i)=>`<div class="opt lock${i===q.a?' ok':''}"><b>${L[i]}</b><span>${esc(o)}</span></div>`).join('')+'</div>';
+    return z+justBox(q,[0,1,2,3])+'</div>';
+  }).join('')||'<div class="card mut">No matching questions in this mock paper.</div>';
+  $('#content').innerHTML=h;mathify();
+}
 /* ---------- events ---------- */
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b)return;
-  const a=b.dataset.act,k=cur,p=/^(marks|study)$/.test(k)?null:pool(k);
+  const a=b.dataset.act,k=cur,p=/^(marks|study|mockstudy)$/.test(k)?null:pool(k);
   const cur_q=()=>BY[p.order[p.idx]];
   switch(a){
     case 'tab':go(b.dataset.k);return;
@@ -765,6 +863,7 @@ document.addEventListener('click',e=>{
       if(p.mode!==nm){p.sv=p.sv||{};p.sv[p.mode]={order:p.order,so:p.so,perm:p.perm,idx:p.idx};
         const n=p.sv[nm]||{order:k==='overall'?shuf(base(k).map(q=>q.id)):base(k).map(q=>q.id),so:false,perm:{},idx:0};
         p.order=n.order;p.so=n.so;p.perm=n.perm;p.idx=n.idx;p.mode=nm}
+      if(nm==='test'){p.focus=true;p.kq=0;p.reviewFilter='all'}else p.focus=false;
       renderContent();return}
     case 'shuffle':p.order=shuf(p.order);p.perm={};p.idx=0;renderContent();return;
     case 'orig':p.order=base(k).map(q=>q.id);p.so=false;p.perm={};p.idx=0;renderContent();return;
@@ -778,16 +877,21 @@ document.addEventListener('click',e=>{
     case 'reset':delete p.ps[cur_q().id];renderContent();return;
     case 'prev':p.idx--;renderContent();window.scrollTo({top:0});return;
     case 'next':p.idx++;renderContent();window.scrollTo({top:0});return;
+    case 'focus':p.focus=!(p.focus!==false);renderContent();window.scrollTo({top:0});return;
+    case 'tprev':p.kq=Math.max(0,(p.kq||0)-1);renderContent();window.scrollTo({top:0});return;
+    case 'tnext':p.kq=Math.min(p.order.length-1,(p.kq||0)+1);renderContent();window.scrollTo({top:0});return;
+    case 'tgoto':p.kq=Math.max(0,Math.min(p.order.length-1,+b.dataset.i||0));renderContent();window.scrollTo({top:0});return;
+    case 'reviewfilter':p.reviewFilter=b.dataset.filter||'all';renderContent();return;
     case 'tpick':{const id=b.dataset.id,o=+b.dataset.o;
       if(!p.t0)p.t0=Date.now();
       {const lim=p.tmin||limitFor(k);if(!p.tEnd&&lim>0){p.tEnd=Date.now()+lim*60000;p.tlim=lim;tick()}}
       p.kq=Math.max(0,p.order.indexOf(id));p.kd=Math.max(0,perm(p,BY[id]).indexOf(o));
       if(p.ta[id]===o)delete p.ta[id];else p.ta[id]=o;
-      const card=b.closest('.q');card.querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',+x.dataset.o===p.ta[id]));
-      const c=$('#cnt');if(c)c.textContent=Object.keys(p.ta).length;showCursor(false);return}
+      renderContent();return}
     case 'submit':submit(k);return;
-    case 'retake':p.ta={};p.sub=null;p.tEnd=0;p.t0=0;p.tlim=0;renderContent();window.scrollTo({top:0});return;
+    case 'retake':p.ta={};p.sub=null;p.tEnd=0;p.t0=0;p.tlim=0;p.kq=0;p.reviewFilter='all';p.focus=true;renderContent();window.scrollTo({top:0});return;
     case 'tstart':{const v=+($('#tmin')||{}).value||0;p.tmin=v;p.tEnd=v>0?Date.now()+v*60000:0;p.tlim=v;if(!p.t0)p.t0=Date.now();tick();return}
+    case 'jpgmarks':downloadJpgMarkStatement();return;
     case 'clearmarks':if(confirm('Clear all saved scores?')){S.marks={};save();renderMarks()}return;
     case 'admin':populateAdmin();$('#modal').classList.add('show');return;
     case 'closeadmin':$('#modal').classList.remove('show');return;
@@ -803,9 +907,10 @@ document.addEventListener('click',e=>{
     case 'repoverall':openReport('overall');return;
   }
 });
-document.addEventListener('input',e=>{if(e.target.id==='stq'){ST.s=e.target.value;studyList()}});
+document.addEventListener('input',e=>{if(e.target.id==='stq'){ST.s=e.target.value;studyList()}if(e.target.id==='msts'){const pos=e.target.selectionStart;MST.s=e.target.value;renderMockStudy();const input=$('#msts');if(input){input.focus();try{input.setSelectionRange(pos,pos)}catch(_){}}}});
 document.addEventListener('change',e=>{
   if(e.target.id==='stw'){ST.w=e.target.value;studyList();return}
+  if(e.target.id==='mst'){MST.k=e.target.value;MST.s='';renderMockStudy();return}
   if(e.target.dataset.sel==='goto'){const p=pool(cur);p.idx=+e.target.value;renderContent();return}
   if(e.target.id==='inPhoto'&&e.target.files[0]){
     const fr=new FileReader();
@@ -817,9 +922,9 @@ document.addEventListener('change',e=>{
 });
 function showCursor(scroll){
   document.querySelectorAll('#content .opt.kb').forEach(x=>x.classList.remove('kb'));
-  if(cur==='marks'||cur==='study')return;
+  if(cur==='marks'||cur==='study'||cur==='mockstudy')return;
   const p=pool(cur);if(p.mode==='test'&&p.sub)return;
-  const card=p.mode==='practice'?document.querySelector('#content .card'):document.querySelectorAll('#content .q')[p.kq];
+  const card=p.mode==='practice'?document.querySelector('#content .card'):document.querySelector('#content .q');
   if(!card)return;
   const el=card.querySelectorAll('.opts .opt')[p.kd];
   if(el){el.classList.add('kb');if(scroll&&el.scrollIntoView)el.scrollIntoView({block:'center',behavior:'smooth'})}
@@ -846,7 +951,7 @@ document.addEventListener('keydown',e=>{
     else if(key==='Home')i=0;else if(key==='End')i=cs.length-1;else return;
     ST.i=i;cs.forEach(c=>c.classList.remove('kb'));cs[i].classList.add('kb');
     cs[i].scrollIntoView({block:'start',behavior:'smooth'});e.preventDefault();return}
-  if(cur==='marks')return;
+  if(cur==='marks'||cur==='mockstudy')return;
   const p=pool(cur),k=key.toLowerCase();
   const done=()=>{e.preventDefault();if(t&&t.blur&&t.closest&&t.closest('#content'))t.blur()};
   if(k==='m'){const o=p.mode==='practice'?'test':'practice';if(clickAct(`[data-act="mode"][data-m="${o}"]`))done();return}
@@ -866,15 +971,16 @@ document.addEventListener('keydown',e=>{
   }
   /* test mode */
   if(p.sub)return;
-  const N=p.order.length,cards=()=>document.querySelectorAll('#content .q');
+  const N=p.order.length,cards=()=>document.querySelector('#content .q');
   const nOpts=i=>BY[p.order[i]].o.length;
-  if(key==='ArrowDown'){if(p.kd<nOpts(p.kq)-1)p.kd++;else if(p.kq<N-1){p.kq++;p.kd=0}showCursor(true);done();return}
-  if(key==='ArrowUp'){if(p.kd>0)p.kd--;else if(p.kq>0){p.kq--;p.kd=nOpts(p.kq)-1}showCursor(true);done();return}
-  if(key==='ArrowRight'||key==='ArrowLeft'){p.kq=Math.max(0,Math.min(N-1,p.kq+(key==='ArrowRight'?1:-1)));p.kd=0;showCursor(true);done();return}
+  if(key==='ArrowDown'){p.kd=Math.min(nOpts(p.kq)-1,p.kd+1);showCursor(true);done();return}
+  if(key==='ArrowUp'){p.kd=Math.max(0,p.kd-1);showCursor(true);done();return}
+  if(key==='ArrowRight'){p.kq=Math.min(N-1,(p.kq||0)+1);p.kd=0;renderContent();showCursor(true);done();return}
+  if(key==='ArrowLeft'){p.kq=Math.max(0,(p.kq||0)-1);p.kd=0;renderContent();showCursor(true);done();return}
   if(key==='Enter'&&e.shiftKey){submit(cur);done();return}
   if(pick>=0&&pick<nOpts(p.kq)){
-    if(clickOpt(cards()[p.kq],pick)){if(p.kq<N-1){p.kq++;p.kd=0}else p.kd=pick;showCursor(true)}done();return}
-  if(key==='Enter'||key===' '){clickOpt(cards()[p.kq],p.kd);done();return}
+    if(clickOpt(cards(),pick)){p.kd=pick;showCursor(false)}done();return}
+  if(key==='Enter'||key===' '){clickOpt(cards(),p.kd);done();return}
 });
 let tx=0,ty=0;
 $('#content').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
